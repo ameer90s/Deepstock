@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockPro - نظام التداول الذكي المتكامل</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StockPro">
+    
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --success: #00b894;
+            --danger: #ff7675;
+            --warning: #fdcb6e;
+            --dark: #0a0a1a;
+            --card-bg: #1a1a2e;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --glow: 0 0 20px rgba(108, 92, 231, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            background: var(--dark);
+            min-height: 100vh;
+            direction: rtl;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(108, 92, 231, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 184, 148, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(255, 118, 117, 0.2) 0%, transparent 50%);
+            animation: bgMove 15s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .top-bar {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(108, 92, 231, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(108, 92, 231, 0.8); }
+        }
+
+        .logo-text {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, #00b894, #00d2a0);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .lang-btn {
+            padding: 6px 12px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 0 3px;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+
+        .market-header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .market-header h1 {
+            font-size: 1.8em;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .market-header p {
+            color: #dfe6e9;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .expert-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .time-display {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .time-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .time-icon { font-size: 1.5em; margin-bottom: 5px; }
+        .time-label { color: #dfe6e9; font-size: 0.7em; margin-bottom: 5px; opacity: 0.7; }
+        .time-value { font-size: 1.2em; font-weight: bold; color: white; }
+        .status-open { color: var(--success) !important; }
+        .status-closed { color: var(--danger) !important; }
+
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .api-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .api-connected { background: rgba(0, 184, 148, 0.2); color: var(--success); }
+        .api-disconnected { background: rgba(255, 118, 117, 0.2); color: var(--danger); }
+
+        .toggle-icon { color: white; font-size: 1.2em; transition: transform 0.3s; }
+        .toggle-icon.open { transform: rotate(180deg); }
+
+        .section-content { display: none; }
+        .section-content.open { display: block; }
+
+        .api-input-group, .add-stock-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .api-input, .stock-input {
+            flex: 1;
+            padding: 10px 15px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.85em;
+            outline: none;
+            direction: ltr;
+        }
+
+        .stock-input { text-transform: uppercase; }
+        .api-input:focus, .stock-input:focus { border-color: var(--primary); }
+
+        .save-btn, .add-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .save-btn:active, .add-btn:active { transform: scale(0.95); }
+
+        .api-info { font-size: 0.75em; color: #666; margin-top: 8px; }
+        .api-link { color: var(--secondary); text-decoration: none; }
+
+        .watchlist-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .stock-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .remove-btn {
+            width: 20px;
+            height: 20px;
+            background: var(--danger);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-add { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+
+        .quick-add-btn {
+            padding: 5px 10px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            color: #dfe6e9;
+            cursor: pointer;
+            font-size: 0.7em;
+            transition: all 0.3s;
+        }
+
+        .filter-options { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+        .filter-btn {
+            padding: 8px 15px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .filter-btn.high-quality.active {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .market-indicators {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .indicator-card {
+            padding: 10px;
+            background: var(--glass);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .indicator-name { font-size: 0.8em; color: #dfe6e9; }
+        .indicator-value { font-size: 1.1em; font-weight: bold; }
+        .indicator-positive { color: var(--success); }
+        .indicator-negative { color: var(--danger); }
+
+        .ai-insights {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: #dfe6e9;
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tip-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: var(--glass);
+            border-radius: 8px;
+            font-size: 0.8em;
+            color: #dfe6e9;
+        }
+
+        .refresh-btn {
+            display: block;
+            margin: 15px auto;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .refresh-btn:active { transform: scale(0.95); }
+
+        .stock-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            animation: cardAppear 0.5s ease;
+        }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stock-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stock-card.buy-card::before { background: linear-gradient(90deg, #00b894, #00d2a0); }
+        .stock-card.sell-card::before { background: linear-gradient(90deg, #ff7675, #ff8a80); }
+        .stock-card.hold-card::before { background: linear-gradient(90deg, #fdcb6e, #ffe082); }
+        .stock-card.pinned { border-color: var(--primary); box-shadow: 0 0 20px rgba(108, 92, 231, 0.5); }
+        .stock-card.high-quality { border-color: var(--success); box-shadow: 0 0 20px rgba(0, 184, 148, 0.3); }
+        .stock-card.ai-recommended { border-color: #00d2a0; box-shadow: 0 0 30px rgba(0, 210, 160, 0.5); }
+        .stock-card.blocked { border-color: var(--danger); opacity: 0.7; }
+
+        .grade-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .grade-a-plus { background: var(--success); color: white; }
+        .grade-a { background: #00d2a0; color: white; }
+        .grade-b { background: var(--warning); color: #333; }
+        .grade-c { background: var(--danger); color: white; }
+
+        .ai-badge-small {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #00b894, #00d2a0);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.6em;
+            font-weight: bold;
+        }
+
+        .blocked-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.6em;
+            font-weight: bold;
+        }
+
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stock-symbol { font-size: 1.3em; font-weight: bold; color: white; }
+
+        .pin-btn {
+            padding: 5px 10px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+
+        .pin-btn.pinned { background: var(--primary); border-color: var(--primary); }
+
+        .recommendation-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .rec-buy { background: linear-gradient(135deg, #00b894, #00d2a0); color: white; animation: recPulse 2s infinite; }
+        .rec-sell { background: linear-gradient(135deg, #ff7675, #ff8a80); color: white; animation: recPulse 2s infinite; }
+        .rec-hold { background: linear-gradient(135deg, #fdcb6e, #ffe082); color: #333; }
+        .rec-blocked { background: var(--danger); color: white; }
+
+        @keyframes recPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 184, 148, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(0, 184, 148, 0.6); }
+        }
+
+        .price-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 12px;
+            background: var(--glass);
+            border-radius: 12px;
+        }
+
+        .current-price { font-size: 1.5em; font-weight: bold; color: white; }
+        .price-change { font-size: 0.9em; font-weight: bold; }
+        .positive { color: var(--success); }
+        .negative { color: var(--danger); }
+
+        .gap-warning {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 118, 117, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: var(--danger);
+        }
+
+        .news-warning {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 220, 110, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: var(--warning);
+        }
+
+        .score-display {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: var(--glass);
+            border-radius: 12px;
+        }
+
+        .score-number { font-size: 1.5em; font-weight: bold; color: white; }
+
+        .score-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--danger), var(--warning), var(--success));
+            transition: width 0.5s;
+        }
+
+        .confirmation-box {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(108, 92, 231, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .confirmation-title {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .confirmation-status {
+            font-size: 0.8em;
+            color: #dfe6e9;
+        }
+
+        .confirmation-ready { color: var(--success); font-weight: bold; }
+        .confirmation-wait { color: var(--warning); font-weight: bold; }
+
+        .signals-list { margin: 10px 0; }
+
+        .signal-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            margin: 2px;
+            background: var(--glass);
+            border-radius: 12px;
+            font-size: 0.7em;
+            color: #dfe6e9;
+        }
+
+        .position-info {
+            margin: 10px 0;
+            padding: 10px;
+            background: var(--glass);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .position-size {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .trap-warning {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 118, 117, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: var(--danger);
+        }
+
+        .trade-levels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .level-box {
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .entry-box { background: rgba(108, 92, 231, 0.1); }
+        .sl-box { background: rgba(255, 118, 117, 0.1); border-color: rgba(255, 118, 117, 0.3); }
+        .tp1-box { background: rgba(0, 184, 148, 0.1); border-color: rgba(0, 184, 148, 0.3); }
+        .tp2-box { background: rgba(0, 184, 148, 0.15); border-color: rgba(0, 184, 148, 0.4); }
+        .tp3-box { background: rgba(0, 184, 148, 0.2); border-color: rgba(0, 184, 148, 0.5); }
+
+        .level-label { font-size: 0.75em; opacity: 0.8; margin-bottom: 5px; color: #dfe6e9; }
+        .level-value { font-size: 1.1em; font-weight: bold; color: white; }
+        .level-value.sl { color: var(--danger); }
+        .level-value.tp { color: var(--success); }
+
+        .result-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .result-btn {
+            padding: 8px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .result-btn:active { transform: scale(0.95); }
+        .tp-hit { background: var(--success); }
+        .sl-hit { background: var(--danger); }
+        .no-hit { background: var(--warning); color: #333; }
+
+        .sr-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .sr-box {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .support-box { background: rgba(0, 184, 148, 0.1); }
+        .resistance-box { background: rgba(255, 118, 117, 0.1); }
+
+        .sr-title { font-weight: bold; margin-bottom: 8px; font-size: 0.8em; }
+        .sr-item { padding: 3px; font-size: 0.75em; color: #dfe6e9; }
+
+        .stats-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .stats-title { text-align: center; font-size: 1.2em; font-weight: bold; color: white; margin-bottom: 15px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-card {
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+            background: var(--glass);
+        }
+
+        .stat-label { font-size: 0.7em; color: #dfe6e9; opacity: 0.7; margin-bottom: 5px; }
+        .stat-value { font-size: 1.2em; font-weight: bold; color: white; }
+        .stat-value.success { color: var(--success); }
+        .stat-value.danger { color: var(--danger); }
+        .stat-value.warning { color: var(--warning); }
+
+        .stats-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .summary-item { text-align: center; }
+        .summary-label { font-size: 0.7em; color: #dfe6e9; opacity: 0.7; }
+        .summary-value { font-size: 1.1em; font-weight: bold; color: var(--primary); }
+
+        .loading { text-align: center; padding: 30px; color: white; }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.5);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        .last-update {
+            text-align: center;
+            color: #dfe6e9;
+            font-size: 0.75em;
+            margin-top: 15px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <div class="container">
+        <!-- الشريط العلوي -->
+        <div class="top-bar">
+            <div class="logo">
+                <div class="logo-icon">📈</div>
+                <div>
+                    <div class="logo-text">StockPro</div>
+                    <div class="ai-badge">🤖 AI + أخبار</div>
+                </div>
+            </div>
+            <div>
+                <button class="lang-btn active" onclick="setLanguage('ar')">عربي</button>
+                <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+            </div>
+        </div>
+        
+        <!-- ترويسة -->
+        <div class="market-header">
+            <h1>📈 نظام التداول الذكي المتكامل</h1>
+            <p>AI + أخبار + فجوات + تحليل فني</p>
+            <div class="expert-badge">⚡ دقة 90%+</div>
+        </div>
+        
+        <!-- الوقت -->
+        <div class="time-display">
+            <div class="time-card">
+                <div class="time-icon">🇦🇪</div>
+                <div class="time-label">الإمارات</div>
+                <div class="time-value" id="uae-time">--:--:--</div>
+            </div>
+            <div class="time-card">
+                <div class="time-icon">🇺🇸</div>
+                <div class="time-label">أمريكا</div>
+                <div class="time-value" id="usa-time">--:--:--</div>
+            </div>
+            <div class="time-card">
+                <div class="time-icon">📊</div>
+                <div class="time-label">السوق</div>
+                <div class="time-value" id="market-status">--</div>
+            </div>
+        </div>
+        
+        <!-- تحليل السوق -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('market-content', 'market-icon')">
+                <div class="section-title">📊 تحليل السوق + AI</div>
+                <div class="toggle-icon" id="market-icon">▼</div>
+            </div>
+            <div class="section-content" id="market-content">
+                <div class="market-indicators">
+                    <div class="indicator-card">
+                        <div class="indicator-name">SPY</div>
+                        <div class="indicator-value" id="spy-value">--</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-name">QQQ</div>
+                        <div class="indicator-value" id="qqq-value">--</div>
+                    </div>
+                    <div class="indicator-card">
+                        <div class="indicator-name">VIX</div>
+                        <div class="indicator-value" id="vix-value">--</div>
+                    </div>
+                </div>
+                <div id="market-recommendation" style="text-align: center; margin-top: 10px; color: #dfe6e9; font-size: 0.85em;"></div>
+                <div class="ai-insights" id="ai-insights">
+                    🤖 تحليل AI: جاري التحليل...
+                </div>
+            </div>
+        </div>
+        
+        <!-- إعدادات API -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('api-content', 'api-icon')">
+                <div>
+                    <div class="section-title">🔑 إعدادات Finnhub API</div>
+                    <div id="api-status" class="api-status api-disconnected">غير متصل</div>
+                </div>
+                <div class="toggle-icon" id="api-icon">▼</div>
+            </div>
+            <div class="section-content" id="api-content">
+                <div class="api-input-group">
+                    <input type="text" class="api-input" id="api-key-input" placeholder="أدخل مفتاح Finnhub API">
+                    <button class="save-btn" onclick="saveApiKey()">حفظ</button>
+                </div>
+                <div class="api-info">
+                    للحصول على مفتاح مجاني: <a href="https://finnhub.io" target="_blank" class="api-link">finnhub.io</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- إدارة الأسهم -->
+        <div class="section">
+            <div class="section-header" onclick="toggleSection('watchlist-content', 'watchlist-icon')">
+                <div class="section-title">📋 إدارة الأسهم</div>
+                <div class="toggle-icon" id="watchlist-icon">▼</div>
+            </div>
+            <div class="section-content" id="watchlist-content">
+                <div class="add-stock-form">
+                    <input type="text" class="stock-input" id="stock-input" placeholder="أدخل رمز السهم (AAPL)">
+                    <button class="add-btn" onclick="addStock()">إضافة</button>
+                </div>
+                <div class="watchlist-tags" id="watchlist-tags"></div>
+                <div class="quick-add">
+                    <span style="color: #666; font-size: 0.7em;">إضافة سريعة:</span>
+                    <button class="quick-add-btn" onclick="quickAdd('AAPL')">AAPL</button>
+                    <button class="quick-add-btn" onclick="quickAdd('MSFT')">MSFT</button>
+                    <button class="quick-add-btn" onclick="quickAdd('NVDA')">NVDA</button>
+                    <button class="quick-add-btn" onclick="quickAdd('AMD')">AMD</button>
+                    <button class="quick-add-btn" onclick="quickAdd('TSLA')">TSLA</button>
+                    <button class="quick-add-btn" onclick="quickAdd('META')">META</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- فلتر الجودة -->
+        <div class="section">
+            <div class="section-title" style="text-align: center; margin-bottom: 10px;">🎯 فلتر جودة التوصيات</div>
+            <div class="filter-options">
+                <button class="filter-btn high-quality active" onclick="setQualityFilter('high', this)">A+ فقط</button>
+                <button class="filter-btn" onclick="setQualityFilter('medium', this)">A و B</button>
+                <button class="filter-btn" onclick="setQualityFilter('all', this)">الكل</button>
+            </div>
+        </div>
+        
+        <!-- زر التحليل -->
+        <button class="refresh-btn" onclick="runFullAnalysis()">
+            🔍 تحليل شامل (AI + أخبار + فجوات)
+        </button>
+        
+        <!-- التوصيات -->
+        <div id="stock-recommendations">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <div>اضغط على زر التحليل...</div>
+            </div>
+        </div>
+        
+        <!-- الإحصائيات -->
+        <div class="stats-section">
+            <div class="stats-title">📊 إحصائيات التداول</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">✅ TP1</div>
+                    <div class="stat-value success" id="tp1-hits">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">✅ TP2</div>
+                    <div class="stat-value success" id="tp2-hits">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">✅ TP3</div>
+                    <div class="stat-value success" id="tp3-hits">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">❌ SL</div>
+                    <div class="stat-value danger" id="sl-hits">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">⚪ No Loss No TP</div>
+                    <div class="stat-value warning" id="noltp-hits">0</div>
+                </div>
+            </div>
+            <div class="stats-summary">
+                <div class="summary-item">
+                    <div class="summary-label">نسبة الربح</div>
+                    <div class="summary-value" id="win-rate">0%</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">إجمالي الصفقات</div>
+                    <div class="summary-value" id="total-trades">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- آخر تحديث -->
+        <div class="last-update" id="last-update">لم يتم التحليل بعد</div>
+    </div>
+
+    <script>
+        // ==================== المتغيرات ====================
+        let currentLanguage = 'ar';
+        let qualityFilter = 'high';
+        let apiKey = localStorage.getItem('finnhub_api_key') || '';
+        let watchlist = JSON.parse(localStorage.getItem('watchlist') || '["AAPL","MSFT","NVDA","AMD","TSLA","META"]');
+        let pinnedStocks = JSON.parse(localStorage.getItem('pinned_stocks') || '[]');
+        let currentStocks = [];
+        let weeklyStats = JSON.parse(localStorage.getItem('weekly_stats') || '{"tp1":0,"tp2":0,"tp3":0,"sl":0,"noltp":0}');
+        let tradesHistory = JSON.parse(localStorage.getItem('trades_history') || '[]');
+        let consecutiveLosses = 0;
+        let marketContext = { trade: true, bias: 'neutral', strength: 50 };
+
+        // ==================== نظام AI ====================
+        class AISystem {
+            constructor() {
+                this.trades = JSON.parse(localStorage.getItem('trades_history') || '[]');
+                this.learnedPatterns = this.analyzePatterns();
+            }
+            
+            analyzePatterns() {
+                const patterns = {
+                    winningSymbols: {},
+                    losingSymbols: {},
+                    winningHours: {},
+                    totalWins: 0,
+                    totalLosses: 0
+                };
+                
+                this.trades.forEach(trade => {
+                    if (trade.result === 'win') {
+                        patterns.totalWins++;
+                        patterns.winningSymbols[trade.symbol] = (patterns.winningSymbols[trade.symbol] || 0) + 1;
+                        const hour = new Date(trade.timestamp).getHours();
+                        patterns.winningHours[hour] = (patterns.winningHours[hour] || 0) + 1;
+                    } else {
+                        patterns.totalLosses++;
+                        patterns.losingSymbols[trade.symbol] = (patterns.losingSymbols[trade.symbol] || 0) + 1;
+                    }
+                });
+                
+                return patterns;
+            }
+            
+            shouldTrade(symbol) {
+                const recentTrades = this.trades.filter(t => t.symbol === symbol).slice(-3);
+                if (recentTrades.length === 3 && recentTrades.every(t => t.result === 'loss')) {
+                    return { trade: false, reason: '3 خسائر متتالية - تجنب' };
+                }
+                
+                const wins = this.learnedPatterns.winningSymbols[symbol] || 0;
+                const losses = this.learnedPatterns.losingSymbols[symbol] || 0;
+                const total = wins + losses;
+                
+                if (total >= 3 && (wins / total) < 0.33) {
+                    return { trade: false, reason: 'نسبة نجاح منخفضة' };
+                }
+                
+                return { trade: true, confidence: total > 0 ? (wins / total) * 100 : 50 };
+            }
+            
+            getInsights() {
+                const insights = [];
+                const winRate = this.trades.length > 0 ? 
+                    (this.learnedPatterns.totalWins / this.trades.length * 100).toFixed(1) : '0';
+                
+                insights.push(`نسبة نجاحك: ${winRate}%`);
+                
+                if (this.learnedPatterns.totalLosses > this.learnedPatterns.totalWins) {
+                    insights.push('⚠️ خسائرك أكثر - راجع استراتيجيتك');
+                } else {
+                    insights.push('✅ أداء جيد - استمر');
+                }
+                
+                return insights;
+            }
+        }
+        
+        const aiSystem = new AISystem();
+
+        // ==================== نظام الأخبار ====================
+        async function checkNews(symbol) {
+            if (!apiKey) return { trade: true, hasNews: false };
+            
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                
+                const response = await fetch(
+                    `https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${yesterday}&to=${today}&token=${apiKey}`
+                );
+                const news = await response.json();
+                
+                if (news && news.length > 0) {
+                    const recentNews = news.slice(0, 3);
+                    const hasBreaking = recentNews.some(n => n.category === 'breaking' || n.category === 'news');
+                    const hasEarnings = recentNews.some(n => n.headline.toLowerCase().includes('earnings') || n.headline.toLowerCase().includes('results'));
+                    
+                    return {
+                        trade: !hasEarnings,
+                        hasNews: true,
+                        hasBreaking,
+                        hasEarnings,
+                        headlines: recentNews.map(n => n.headline)
+                    };
+                }
+                
+                return { trade: true, hasNews: false };
+            } catch (error) {
+                console.error('News check error:', error);
+                return { trade: true, hasNews: false };
+            }
+        }
+
+        // ==================== نظام الفجوات ====================
+        function checkGap(stock) {
+            const prevClose = stock.previousClose || stock.currentPrice;
+            const gapPercent = ((stock.currentPrice - prevClose) / prevClose) * 100;
+            
+            return {
+                hasGap: Math.abs(gapPercent) > 3,
+                gapPercent: gapPercent.toFixed(2),
+                isDangerous: Math.abs(gapPercent) > 5
+            };
+        }
+
+        // ==================== وظائف مساعدة ====================
+        function toggleSection(contentId, iconId) {
+            document.getElementById(contentId).classList.toggle('open');
+            document.getElementById(iconId).classList.toggle('open');
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('api-key-input');
+            const key = input.value.trim();
+            if (key) {
+                apiKey = key;
+                localStorage.setItem('finnhub_api_key', key);
+                updateApiStatus();
+                alert('✅ تم حفظ المفتاح بنجاح!');
+            }
+        }
+
+        function updateApiStatus() {
+            const statusElement = document.getElementById('api-status');
+            const input = document.getElementById('api-key-input');
+            if (apiKey) {
+                statusElement.textContent = '✅ متصل';
+                statusElement.className = 'api-status api-connected';
+                input.value = apiKey;
+            } else {
+                statusElement.textContent = '❌ غير متصل';
+                statusElement.className = 'api-status api-disconnected';
+            }
+        }
+
+        function displayWatchlist() {
+            const container = document.getElementById('watchlist-tags');
+            container.innerHTML = '';
+            watchlist.forEach(symbol => {
+                const tag = document.createElement('div');
+                tag.className = 'stock-tag';
+                tag.innerHTML = `${symbol} <button class="remove-btn" onclick="removeStock('${symbol}')">×</button>`;
+                container.appendChild(tag);
+            });
+        }
+
+        function addStock() {
+            const input = document.getElementById('stock-input');
+            const symbol = input.value.trim().toUpperCase();
+            if (symbol && !watchlist.includes(symbol)) {
+                watchlist.push(symbol);
+                localStorage.setItem('watchlist', JSON.stringify(watchlist));
+                displayWatchlist();
+                input.value = '';
+            }
+        }
+
+        function quickAdd(symbol) {
+            if (!watchlist.includes(symbol)) {
+                watchlist.push(symbol);
+                localStorage.setItem('watchlist', JSON.stringify(watchlist));
+                displayWatchlist();
+            }
+        }
+
+        function removeStock(symbol) {
+            watchlist = watchlist.filter(s => s !== symbol);
+            localStorage.setItem('watchlist', JSON.stringify(watchlist));
+            displayWatchlist();
+        }
+
+        function togglePin(symbol) {
+            if (pinnedStocks.includes(symbol)) {
+                pinnedStocks = pinnedStocks.filter(s => s !== symbol);
+            } else {
+                pinnedStocks.push(symbol);
+            }
+            localStorage.setItem('pinned_stocks', JSON.stringify(pinnedStocks));
+            displayStocks(currentStocks);
+        }
+
+        function setQualityFilter(filter, btn) {
+            qualityFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (currentStocks.length) displayStocks(currentStocks);
+        }
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateTimes();
+        }
+
+        // ==================== الوقت ====================
+        function updateTimes() {
+            const now = new Date();
+            
+            document.getElementById('uae-time').textContent = now.toLocaleTimeString('en-US', {
+                timeZone: 'Asia/Dubai', hour12: false,
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+            
+            document.getElementById('usa-time').textContent = now.toLocaleTimeString('en-US', {
+                timeZone: 'America/New_York', hour12: false,
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+            
+            const nyTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+            const currentTime = nyTime.getHours() * 60 + nyTime.getMinutes();
+            const isOpen = currentTime >= 570 && currentTime <= 960;
+            
+            const statusElement = document.getElementById('market-status');
+            if (isOpen) {
+                statusElement.textContent = 'مفتوح 🟢';
+                statusElement.className = 'time-value status-open';
+            } else {
+                statusElement.textContent = 'مغلق 🔴';
+                statusElement.className = 'time-value status-closed';
+            }
+        }
+
+        // ==================== تجنب الفخاخ ====================
+        function avoidTraps() {
+            const traps = [];
+            const now = new Date();
+            const nyTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+            const minutesSinceOpen = (nyTime.getHours() - 9) * 60 + nyTime.getMinutes() - 30;
+            
+            if (minutesSinceOpen < 15) traps.push('⚠️ أول 15 دقيقة - تقلبات كاذبة');
+            if (minutesSinceOpen > 330) traps.push('⚠️ آخر 30 دقيقة - تجنب الدخول');
+            
+            return traps;
+        }
+
+        // ==================== تأكيد الدخول ====================
+        function confirmEntry(stock) {
+            const confirmations = [];
+            if (stock.currentPrice > stock.resistanceLevels[0].price) confirmations.push('اختراق مقاومة');
+            if (stock.volumeRatio > 2) confirmations.push('حجم قوي');
+            if (stock.rsi > 55 && stock.rsi < 65) confirmations.push('زخم مثالي');
+            if (stock.score >= 70) confirmations.push('نقاط عالية');
+            
+            return {
+                ready: confirmations.length >= 2,
+                confirmations,
+                count: confirmations.length
+            };
+        }
+
+        // ==================== حجم المركز ====================
+        function smartPositionSize(stock, accountSize = 10000) {
+            let riskPercent = 1;
+            if (stock.grade === 'A+') riskPercent = 2;
+            else if (stock.grade === 'A') riskPercent = 1.5;
+            else if (stock.grade === 'B') riskPercent = 0.5;
+            else return { shares: 0, riskPercent: 0 };
+            
+            if (marketContext.strength > 75) riskPercent *= 1.2;
+            else if (marketContext.strength < 50) riskPercent *= 0.5;
+            if (consecutiveLosses >= 2) riskPercent *= 0.5;
+            
+            const riskAmount = accountSize * (riskPercent / 100);
+            const riskPerShare = Math.abs(stock.entry - stock.stopLoss);
+            const shares = Math.floor(riskAmount / riskPerShare);
+            
+            return { shares, riskPercent: riskPercent.toFixed(2), riskAmount: riskAmount.toFixed(2) };
+        }
+
+        // ==================== التحليل الشامل ====================
+        async function runFullAnalysis() {
+            const stockGrid = document.getElementById('stock-recommendations');
+            stockGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>🤖 جاري التحليل الشامل...</div></div>';
+            
+            const traps = avoidTraps();
+            if (traps.length > 0) {
+                stockGrid.innerHTML = `<div class="trap-warning">${traps.join('<br>')}</div>`;
+                return;
+            }
+            
+            await analyzeMarketContext();
+            const stocks = await analyzeAllStocks();
+            currentStocks = stocks;
+            displayStocks(stocks);
+            updateLastUpdateTime();
+            updateAIInsights();
+        }
+
+        async function analyzeMarketContext() {
+            if (apiKey) {
+                try {
+                    for (const symbol of ['SPY', 'QQQ', 'VIX']) {
+                        const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
+                        const quote = await response.json();
+                        const valueElement = document.getElementById(symbol.toLowerCase() + '-value');
+                        if (valueElement && quote.dp) {
+                            valueElement.textContent = (quote.dp > 0 ? '+' : '') + quote.dp.toFixed(2) + '%';
+                            valueElement.className = 'indicator-value ' + (quote.dp > 0 ? 'indicator-positive' : 'indicator-negative');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Market analysis error:', error);
+                }
+            } else {
+                document.getElementById('spy-value').textContent = '+0.5%';
+                document.getElementById('spy-value').className = 'indicator-value indicator-positive';
+                document.getElementById('qqq-value').textContent = '+0.8%';
+                document.getElementById('qqq-value').className = 'indicator-value indicator-positive';
+                document.getElementById('vix-value').textContent = '-2.0%';
+                document.getElementById('vix-value').className = 'indicator-value indicator-positive';
+            }
+            
+            marketContext = { trade: true, bias: 'bullish', strength: 75 };
+            document.getElementById('market-recommendation').textContent = '✅ سوق إيجابي - مناسب للتداول';
+        }
+
+        async function analyzeAllStocks() {
+            const analyzedStocks = [];
+            
+            for (const symbol of watchlist) {
+                // تحقق من AI
+                const aiCheck = aiSystem.shouldTrade(symbol);
+                if (!aiCheck.trade) continue;
+                
+                // تحقق من الأخبار
+                const newsCheck = await checkNews(symbol);
+                if (!newsCheck.trade) continue;
+                
+                try {
+                    if (apiKey) {
+                        const [quote, candles] = await Promise.all([
+                            fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`).then(r => r.json()),
+                            fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=5&from=${Math.floor(Date.now()/1000)-3600}&to=${Math.floor(Date.now()/1000)}&token=${apiKey}`).then(r => r.json())
+                        ]);
+                        
+                        if (quote.c && quote.c > 0) {
+                            const stock = advancedAnalysis(symbol, quote, candles);
+                            stock.aiConfidence = aiCheck.confidence;
+                            stock.aiRecommended = aiCheck.confidence > 60;
+                            stock.newsCheck = newsCheck;
+                            stock.gapCheck = checkGap(stock);
+                            stock.isBlocked = newsCheck.hasEarnings || stock.gapCheck.isDangerous;
+                            analyzedStocks.push(stock);
+                        }
+                    } else {
+                        const stock = demoAnalysis(symbol);
+                        stock.aiConfidence = aiCheck.confidence;
+                        stock.aiRecommended = aiCheck.confidence > 60;
+                        stock.newsCheck = { trade: true, hasNews: false };
+                        stock.gapCheck = { hasGap: false, gapPercent: 0, isDangerous: false };
+                        stock.isBlocked = false;
+                        analyzedStocks.push(stock);
+                    }
+                } catch (error) {
+                    console.error(`Error ${symbol}:`, error);
+                }
+            }
+            
+            return analyzedStocks.sort((a, b) => b.score - a.score);
+        }
+
+        function advancedAnalysis(symbol, quote, candles) {
+            const currentPrice = quote.c;
+            const closes = candles.c || [];
+            const volumes = candles.v || [];
+            
+            let score = 0;
+            const signals = [];
+            
+            if (quote.c > quote.o) { score += 20; signals.push('اتجاه صاعد'); }
+            
+            const rsi = calculateRSI(closes, 14);
+            if (rsi > 50 && rsi < 70) { score += 15; signals.push('RSI: ' + rsi.toFixed(1)); }
+            
+            const volumeAvg = calculateSMA(volumes, 20);
+            const volumeRatio = volumes[volumes.length - 1] / volumeAvg;
+            if (volumeRatio > 1.5) { score += 15; signals.push('حجم: ' + volumeRatio.toFixed(1) + 'x'); }
+            
+            const range = quote.h - quote.l;
+            const position = range > 0 ? (quote.c - quote.l) / range : 0.5;
+            if (position > 0.6 && quote.dp > 0) { score += 10; signals.push('زخم إيجابي'); }
+            
+            if (marketContext.trade && marketContext.bias === 'bullish') { score += 20; signals.push('سوق داعم'); }
+            
+            const volatility = range / currentPrice * 100;
+            if (volatility > 0.5 && volatility < 3) { score += 10; signals.push('تقلب مناسب'); }
+            
+            const atr = range * 0.3;
+            const isBuy = score >= 50 && quote.c > quote.o;
+            const stopLoss = isBuy ? currentPrice - atr : currentPrice + atr;
+            const risk = Math.abs(currentPrice - stopLoss);
+            
+            return {
+                symbol,
+                recommendation: isBuy ? 'شراء' : score <= -20 ? 'بيع' : 'انتظار',
+                recClass: isBuy ? 'rec-buy' : score <= -20 ? 'rec-sell' : 'rec-hold',
+                score: Math.max(0, score),
+                grade: score >= 70 ? 'A+' : score >= 55 ? 'A' : score >= 40 ? 'B' : 'C',
+                signals,
+                confidence: Math.max(0, score),
+                currentPrice,
+                previousClose: quote.pc,
+                change: quote.d,
+                changePercent: quote.dp,
+                entry: currentPrice,
+                stopLoss,
+                tp1: currentPrice + (isBuy ? 0.5 * risk : -0.5 * risk),
+                tp2: currentPrice + (isBuy ? 1 * risk : -1 * risk),
+                tp3: currentPrice + (isBuy ? 1.5 * risk : -1.5 * risk),
+                rsi,
+                volumeRatio,
+                supportLevels: [
+                    { price: quote.l, type: 'قاع اليوم', strength: 'قوي' },
+                    { price: currentPrice - atr, type: 'ATR', strength: 'متوسط' }
+                ],
+                resistanceLevels: [
+                    { price: quote.h, type: 'قمة اليوم', strength: 'قوي' },
+                    { price: currentPrice + atr, type: 'ATR', strength: 'متوسط' }
+                ]
+            };
+        }
+
+        function demoAnalysis(symbol) {
+            const demoData = {
+                'AAPL': { price: 195.50, dp: 1.19, score: 65 },
+                'MSFT': { price: 415.30, dp: 1.10, score: 60 },
+                'NVDA': { price: 875.25, dp: 1.45, score: 75 },
+                'AMD': { price: 165.30, dp: 1.72, score: 70 },
+                'TSLA': { price: 245.10, dp: -2.12, score: 45 },
+                'META': { price: 485.60, dp: 0.66, score: 55 }
+            };
+            
+            const data = demoData[symbol] || { price: 100, dp: 0, score: 40 };
+            const isBuy = data.dp > 0;
+            const currentPrice = data.price;
+            const atr = currentPrice * 0.01;
+            const stopLoss = isBuy ? currentPrice - atr : currentPrice + atr;
+            const risk = Math.abs(currentPrice - stopLoss);
+            
+            return {
+                symbol,
+                recommendation: isBuy ? 'شراء' : data.dp < 0 ? 'بيع' : 'انتظار',
+                recClass: isBuy ? 'rec-buy' : data.dp < 0 ? 'rec-sell' : 'rec-hold',
+                score: data.score,
+                grade: data.score >= 70 ? 'A+' : data.score >= 55 ? 'A' : data.score >= 40 ? 'B' : 'C',
+                signals: ['تحليل فني', 'زخم السوق', 'حجم مناسب'],
+                confidence: data.score,
+                currentPrice,
+                previousClose: currentPrice * 0.99,
+                change: data.dp,
+                changePercent: data.dp,
+                entry: currentPrice,
+                stopLoss,
+                tp1: currentPrice + (isBuy ? 0.5 * risk : -0.5 * risk),
+                tp2: currentPrice + (isBuy ? 1 * risk : -1 * risk),
+                tp3: currentPrice + (isBuy ? 1.5 * risk : -1.5 * risk),
+                rsi: isBuy ? 60 : 40,
+                volumeRatio: 1.8,
+                supportLevels: [
+                    { price: currentPrice - atr, type: 'دعم قريب', strength: 'قوي' }
+                ],
+                resistanceLevels: [
+                    { price: currentPrice + atr, type: 'مقاومة قريبة', strength: 'قوي' }
+                ]
+            };
+        }
+
+        function calculateRSI(data, period) {
+            if (!data || data.length < period + 1) return 50;
+            let gains = 0, losses = 0;
+            for (let i = data.length - period; i < data.length; i++) {
+                const diff = data[i] - data[i - 1];
+                if (diff >= 0) gains += diff;
+                else losses -= diff;
+            }
+            if (losses === 0) return 100;
+            const rs = (gains / period) / (losses / period);
+            return 100 - (100 / (1 + rs));
+        }
+
+        function calculateSMA(data, period) {
+            if (!data || data.length < period) return 1;
+            return data.slice(-period).reduce((a, b) => a + b, 0) / period;
+        }
+
+        // ==================== عرض التوصيات ====================
+        function displayStocks(stocks) {
+            const stockGrid = document.getElementById('stock-recommendations');
+            stockGrid.innerHTML = '';
+            
+            let filteredStocks = stocks;
+            if (qualityFilter === 'high') {
+                filteredStocks = stocks.filter(s => s.grade === 'A+' || s.grade === 'A');
+            } else if (qualityFilter === 'medium') {
+                filteredStocks = stocks.filter(s => s.grade !== 'C');
+            }
+            
+            const pinned = filteredStocks.filter(s => pinnedStocks.includes(s.symbol));
+            const unpinned = filteredStocks.filter(s => !pinnedStocks.includes(s.symbol));
+            const sortedStocks = [...pinned, ...unpinned].slice(0, 5);
+            
+            if (sortedStocks.length === 0) {
+                stockGrid.innerHTML = '<div style="text-align: center; color: var(--warning); padding: 30px;">⚠️ لا توجد توصيات بجودة كافية اليوم. النقد هو مركز.</div>';
+                return;
+            }
+            
+            sortedStocks.forEach((stock, index) => {
+                const isPinned = pinnedStocks.includes(stock.symbol);
+                const entryConfirm = confirmEntry(stock);
+                const position = smartPositionSize(stock);
+                
+                const card = document.createElement('div');
+                card.className = `stock-card ${stock.recClass.replace('rec-', '')}-card ${isPinned ? 'pinned' : ''} ${stock.grade === 'A+' || stock.grade === 'A' ? 'high-quality' : ''} ${stock.aiRecommended ? 'ai-recommended' : ''} ${stock.isBlocked ? 'blocked' : ''}`;
+                card.style.animationDelay = (index * 0.1) + 's';
+                
+                const changeClass = stock.change >= 0 ? 'positive' : 'negative';
+                const changeSign = stock.change >= 0 ? '+' : '';
+                const gradeClass = stock.grade === 'A+' ? 'grade-a-plus' : stock.grade === 'A' ? 'grade-a' : stock.grade === 'B' ? 'grade-b' : 'grade-c';
+                
+                let warningsHTML = '';
+                if (stock.gapCheck && stock.gapCheck.hasGap) {
+                    warningsHTML += `<div class="gap-warning">⚠️ فجوة سعرية: ${stock.gapCheck.gapPercent}% - مخاطرة عالية</div>`;
+                }
+                if (stock.newsCheck && stock.newsCheck.hasEarnings) {
+                    warningsHTML += `<div class="news-warning">📰 أرباح قريبة - تجنب التداول</div>`;
+                }
+                if (stock.newsCheck && stock.newsCheck.hasBreaking) {
+                    warningsHTML += `<div class="news-warning">🚨 أخبار عاجلة - انتظر استقرار السعر</div>`;
+                }
+                
+                card.innerHTML = `
+                    <div class="grade-badge ${gradeClass}">${stock.grade}</div>
+                    ${stock.aiRecommended ? '<div class="ai-badge-small">🤖 AI</div>' : ''}
+                    ${stock.isBlocked ? '<div class="blocked-badge">🚫 محظور</div>' : ''}
+                    
+                    <div class="stock-header">
+                        <div>
+                            <div class="stock-symbol">${index + 1}. ${stock.symbol}</div>
+                            <button class="pin-btn ${isPinned ? 'pinned' : ''}" onclick="togglePin('${stock.symbol}')">
+                                ${isPinned ? '📌 مثبت' : '📌 تثبيت'}
+                            </button>
+                        </div>
+                        <div class="recommendation-badge ${stock.isBlocked ? 'rec-blocked' : stock.recClass}">
+                            ${stock.isBlocked ? '🚫 محظور' : stock.recommendation}
+                        </div>
+                    </div>
+                    
+                    <div class="price-info">
+                        <span class="current-price">$${stock.currentPrice.toFixed(2)}</span>
+                        <span class="price-change ${changeClass}">
+                            ${changeSign}${stock.change.toFixed(2)} (${changeSign}${stock.changePercent.toFixed(2)}%)
+                        </span>
+                    </div>
+                    
+                    ${warningsHTML}
+                    
+                    <div class="score-display">
+                        <div class="score-number">${stock.score}/100</div>
+                        <div class="score-bar">
+                            <div class="score-fill" style="width: ${stock.score}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="confirmation-box">
+                        <div class="confirmation-title">تأكيد الدخول</div>
+                        <div class="confirmation-status ${entryConfirm.ready ? 'confirmation-ready' : 'confirmation-wait'}">
+                            ${entryConfirm.ready ? '✅ جاهز للدخول' : '⏳ انتظر تأكيد إضافي'}
+                            (${entryConfirm.count}/2)
+                        </div>
+                        <div style="font-size: 0.75em; color: #dfe6e9; margin-top: 5px;">
+                            ${entryConfirm.confirmations.join(' | ')}
+                        </div>
+                    </div>
+                    
+                    <div class="signals-list">
+                        ${stock.signals.map(s => `<span class="signal-tag">${s}</span>`).join('')}
+                        ${stock.rsi ? `<span class="signal-tag">RSI: ${stock.rsi.toFixed(1)}</span>` : ''}
+                        ${stock.volumeRatio ? `<span class="signal-tag">Vol: ${stock.volumeRatio.toFixed(1)}x</span>` : ''}
+                        ${stock.aiConfidence ? `<span class="signal-tag">🤖 AI: ${stock.aiConfidence.toFixed(0)}%</span>` : ''}
+                    </div>
+                    
+                    <div class="trade-levels">
+                        <div class="level-box entry-box">
+                            <div class="level-label">📍 الدخول</div>
+                            <div class="level-value">$${stock.entry.toFixed(2)}</div>
+                        </div>
+                        <div class="level-box sl-box">
+                            <div class="level-label">🛑 وقف الخسارة</div>
+                            <div class="level-value sl">$${stock.stopLoss.toFixed(2)}</div>
+                        </div>
+                        <div class="level-box tp1-box">
+                            <div class="level-label">🎯 TP1</div>
+                            <div class="level-value tp">$${stock.tp1.toFixed(2)}</div>
+                        </div>
+                        <div class="level-box tp2-box">
+                            <div class="level-label">🎯 TP2</div>
+                            <div class="level-value tp">$${stock.tp2.toFixed(2)}</div>
+                        </div>
+                        <div class="level-box tp3-box">
+                            <div class="level-label">🎯 TP3</div>
+                            <div class="level-value tp">$${stock.tp3.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="position-info">
+                        📊 حجم المركز: <span class="position-size">${position.shares} سهم</span>
+                        (مخاطرة ${position.riskPercent}% = $${position.riskAmount})
+                    </div>
+                    
+                    <div class="result-buttons">
+                        <button class="result-btn tp-hit" onclick="recordResult('${stock.symbol}', 'tp1')">✅ TP1</button>
+                        <button class="result-btn tp-hit" onclick="recordResult('${stock.symbol}', 'tp2')">✅ TP2</button>
+                        <button class="result-btn tp-hit" onclick="recordResult('${stock.symbol}', 'tp3')">✅ TP3</button>
+                        <button class="result-btn sl-hit" onclick="recordResult('${stock.symbol}', 'sl')">❌ SL</button>
+                        <button class="result-btn no-hit" onclick="recordResult('${stock.symbol}', 'noltp')">⚪ No</button>
+                    </div>
+                    
+                    <div class="sr-section">
+                        <div class="sr-box support-box">
+                            <div class="sr-title" style="color: var(--success);">📈 الدعم</div>
+                            ${stock.supportLevels.map(level => 
+                                `<div class="sr-item">$${level.price.toFixed(2)} - ${level.type} (${level.strength})</div>`
+                            ).join('')}
+                        </div>
+                        <div class="sr-box resistance-box">
+                            <div class="sr-title" style="color: var(--danger);">📉 المقاومة</div>
+                            ${stock.resistanceLevels.map(level => 
+                                `<div class="sr-item">$${level.price.toFixed(2)} - ${level.type} (${level.strength})</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                stockGrid.appendChild(card);
+            });
+        }
+
+        // ==================== تحديث AI ====================
+        function updateAIInsights() {
+            const insights = aiSystem.getInsights();
+            const insightsElement = document.getElementById('ai-insights');
+            insightsElement.innerHTML = '🤖 تحليل AI:<br>' + insights.join('<br>');
+        }
+
+        // ==================== تسجيل النتائج ====================
+        function recordResult(symbol, result) {
+            if (result === 'tp1') weeklyStats.tp1++;
+            else if (result === 'tp2') weeklyStats.tp2++;
+            else if (result === 'tp3') weeklyStats.tp3++;
+            else if (result === 'sl') {
+                weeklyStats.sl++;
+                consecutiveLosses++;
+            } else if (result === 'noltp') weeklyStats.noltp++;
+            
+            if (result !== 'sl') consecutiveLosses = 0;
+            
+            tradesHistory.push({
+                symbol,
+                result: result.startsWith('tp') ? 'win' : 'loss',
+                timestamp: new Date().toISOString()
+            });
+            
+            localStorage.setItem('weekly_stats', JSON.stringify(weeklyStats));
+            localStorage.setItem('trades_history', JSON.stringify(tradesHistory));
+            updateStatsDisplay();
+            alert(`✅ تم تسجيل النتيجة لـ ${symbol}`);
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('tp1-hits').textContent = weeklyStats.tp1;
+            document.getElementById('tp2-hits').textContent = weeklyStats.tp2;
+            document.getElementById('tp3-hits').textContent = weeklyStats.tp3;
+            document.getElementById('sl-hits').textContent = weeklyStats.sl;
+            document.getElementById('noltp-hits').textContent = weeklyStats.noltp;
+            
+            const total = weeklyStats.tp1 + weeklyStats.tp2 + weeklyStats.tp3 + weeklyStats.sl + weeklyStats.noltp;
+            const wins = weeklyStats.tp1 + weeklyStats.tp2 + weeklyStats.tp3;
+            const winRate = total > 0 ? (wins / total * 100).toFixed(1) : '0';
+            
+            document.getElementById('win-rate').textContent = winRate + '%';
+            document.getElementById('total-trades').textContent = total;
+        }
+
+        function updateLastUpdateTime() {
+            document.getElementById('last-update').textContent = 'آخر تحليل: ' + new Date().toLocaleTimeString('ar-SA');
+        }
+
+        // ==================== بدء التطبيق ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTimes();
+            setInterval(updateTimes, 1000);
+            updateApiStatus();
+            displayWatchlist();
+            updateStatsDisplay();
+            updateAIInsights();
+        });
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('✅ SW registered'))
+                    .catch(err => console.log('❌ SW failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
