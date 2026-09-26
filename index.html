@@ -3,76 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro - VSA الذكي</title>
+    <title>StockPro V1.0 - نظام التداول الذكي</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#6c5ce7">
+    <meta name="theme-color" content="#4A90E2">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="StockPro">
+    <meta name="apple-mobile-web-app-title" content="StockPro V1.0">
     
     <style>
         :root {
-            --primary: #6c5ce7;
-            --secondary: #a29bfe;
-            --success: #00b894;
-            --danger: #ff7675;
-            --warning: #fdcb6e;
-            --dark: #0a0a1a;
-            --card-bg: #1a1a2e;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --secondary: #7B68EE;
+            --success: #00c853;
+            --danger: #ff5252;
+            --warning: #ffb300;
+            --gold: #ffc107;
+            --bg-gradient-1: #E3F2FD;
+            --bg-gradient-2: #BBDEFB;
+            --bg-gradient-3: #C5CAE9;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-bg-solid: #FFFFFF;
+            --glass: rgba(255, 255, 255, 0.6);
+            --border: rgba(74, 144, 226, 0.2);
+            --text-primary: #1a237e;
+            --text-secondary: #5c6bc0;
+            --shadow: 0 8px 24px rgba(74, 144, 226, 0.15);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
-            background: var(--dark);
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 40%, #C5CAE9 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             direction: rtl;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
+            color: var(--text-primary);
+            overflow-x: hidden;
         }
 
-        .background-animation {
+        /* خلفية متحركة ديناميكية */
+        .bg-shapes {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: 
-                radial-gradient(ellipse at 20% 50%, rgba(108, 92, 231, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(0, 184, 148, 0.2) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(255, 118, 117, 0.2) 0%, transparent 50%);
-            animation: bgMove 15s ease-in-out infinite;
+            overflow: hidden;
+            pointer-events: none;
         }
 
-        @keyframes bgMove {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(74, 144, 226, 0.15) 0%, transparent 70%);
+            animation: floatShape 20s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 300px; height: 300px;
+            top: -100px; right: -100px;
+            animation-delay: 0s;
+        }
+        .shape:nth-child(2) {
+            width: 400px; height: 400px;
+            bottom: -150px; left: -150px;
+            background: radial-gradient(circle, rgba(123, 104, 238, 0.12) 0%, transparent 70%);
+            animation-delay: -5s;
+        }
+        .shape:nth-child(3) {
+            width: 250px; height: 250px;
+            top: 40%; left: 60%;
+            background: radial-gradient(circle, rgba(0, 200, 83, 0.1) 0%, transparent 70%);
+            animation-delay: -10s;
+        }
+
+        @keyframes floatShape {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 15px;
+            padding: 12px;
         }
 
+        /* ==================== الشريط العلوي ==================== */
         .top-bar {
-            background: var(--glass);
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.9), rgba(123, 104, 238, 0.85));
             backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 12px 20px;
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 18px;
+            padding: 12px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             position: sticky;
-            top: 10px;
+            top: 8px;
             z-index: 100;
+            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3);
         }
 
         .logo {
@@ -82,483 +120,574 @@
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.25);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            animation: pulse 2s infinite;
+            backdrop-filter: blur(10px);
         }
 
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(108, 92, 231, 0.5); }
-            50% { box-shadow: 0 0 30px rgba(108, 92, 231, 0.8); }
+        .logo-info { color: white; }
+
+        .logo-name {
+            font-size: 1.15em;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            line-height: 1.1;
         }
 
-        .logo-text {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: white;
+        .logo-version {
+            font-size: 0.65em;
+            opacity: 0.9;
+            font-weight: 600;
+            margin-top: 2px;
         }
 
-        .vsa-badge {
-            background: linear-gradient(135deg, #00b894, #00d2a0);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.7em;
-            font-weight: bold;
-        }
+        .lang-btns { display: flex; gap: 6px; }
 
         .lang-btn {
-            padding: 6px 12px;
-            background: var(--glass);
-            border: 1px solid var(--border);
+            padding: 5px 11px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            border-radius: 20px;
+            border-radius: 14px;
             cursor: pointer;
-            font-size: 0.75em;
-            font-weight: bold;
-            margin: 0 3px;
+            font-size: 0.7em;
+            font-weight: 700;
+            transition: all 0.3s;
         }
 
         .lang-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-color: transparent;
+            background: white;
+            color: var(--primary-dark);
         }
 
-        .market-header {
-            text-align: center;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .market-header h1 {
-            font-size: 1.8em;
-            color: white;
-            margin-bottom: 8px;
-        }
-
-        .market-header p {
-            color: #dfe6e9;
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
-
-        .expert-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            color: white;
-            margin-top: 10px;
-        }
-
+        /* ==================== بطاقات الوقت ==================== */
         .time-display {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .time-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 15px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 14px;
+            padding: 10px 8px;
             text-align: center;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
+            transition: transform 0.3s;
         }
 
-        .time-icon { font-size: 1.5em; margin-bottom: 5px; }
-        .time-label { color: #dfe6e9; font-size: 0.7em; margin-bottom: 5px; opacity: 0.7; }
-        .time-value { font-size: 1.2em; font-weight: bold; color: white; }
+        .time-card:active { transform: scale(0.97); }
+
+        .time-flag { font-size: 1.1em; margin-bottom: 2px; }
+        .time-label { color: var(--text-secondary); font-size: 0.62em; font-weight: 600; margin-bottom: 3px; }
+        .time-value {
+            font-size: 0.95em;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.5px;
+        }
         .status-open { color: var(--success) !important; }
         .status-closed { color: var(--danger) !important; }
 
-        .section {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
+        /* ==================== التبويبات ==================== */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            padding: 5px;
             margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.1);
         }
 
-        .section-header {
+        .tab-btn {
+            flex: 1;
+            padding: 10px 8px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .tab-btn .tab-icon { font-size: 1.2em; }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==================== البطاقات ==================== */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             cursor: pointer;
         }
 
-        .section-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: white;
+        .card-title {
+            font-size: 0.95em;
+            font-weight: 800;
+            color: var(--text-primary);
         }
 
-        .api-status {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.7em;
-            font-weight: bold;
+        .badge {
+            padding: 3px 9px;
+            border-radius: 10px;
+            font-size: 0.65em;
+            font-weight: 700;
         }
 
-        .api-connected { background: rgba(0, 184, 148, 0.2); color: var(--success); }
-        .api-disconnected { background: rgba(255, 118, 117, 0.2); color: var(--danger); }
+        .badge-connected {
+            background: rgba(0, 200, 83, 0.15);
+            color: var(--success);
+        }
 
-        .toggle-icon { color: white; font-size: 1.2em; transition: transform 0.3s; }
-        .toggle-icon.open { transform: rotate(180deg); }
+        .badge-disconnected {
+            background: rgba(255, 82, 82, 0.15);
+            color: var(--danger);
+        }
 
-        .section-content { display: none; }
-        .section-content.open { display: block; }
+        .toggle-arrow {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            transition: transform 0.3s;
+        }
 
-        .api-input-group, .add-stock-form {
+        .toggle-arrow.open { transform: rotate(180deg); }
+
+        .card-body { display: none; }
+        .card-body.open { display: block; animation: fadeIn 0.3s ease; }
+
+        /* ==================== المدخلات ==================== */
+        .input-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 10px;
         }
 
-        .api-input, .stock-input {
+        .input {
             flex: 1;
-            padding: 10px 15px;
-            background: var(--glass);
-            border: 1px solid var(--border);
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(74, 144, 226, 0.15);
             border-radius: 12px;
-            color: white;
+            color: var(--text-primary);
             font-size: 0.85em;
+            font-weight: 600;
             outline: none;
+            transition: all 0.3s;
             direction: ltr;
         }
 
-        .stock-input { text-transform: uppercase; }
-        .api-input:focus, .stock-input:focus { border-color: var(--primary); }
+        .input::placeholder { color: #9e9e9e; font-weight: 500; }
 
-        .save-btn, .add-btn {
+        .input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+        }
+
+        .btn-primary {
             padding: 10px 20px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 0.85em;
+            transition: all 0.3s;
             white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
         }
 
-        .api-info { font-size: 0.75em; color: #666; margin-top: 8px; }
-        .api-link { color: var(--secondary); text-decoration: none; }
+        .btn-primary:active { transform: scale(0.95); }
 
-        .watchlist-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .btn-large {
+            width: 100%;
+            padding: 15px;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+
+        .hint-text {
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        .hint-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        /* ==================== الأسهم ==================== */
+        .stock-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
 
         .stock-tag {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: var(--glass);
-            border: 1px solid var(--border);
+            gap: 6px;
+            padding: 7px 12px;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.15), rgba(123, 104, 238, 0.15));
+            border: 1px solid rgba(74, 144, 226, 0.3);
             border-radius: 20px;
-            color: white;
-            font-size: 0.8em;
-            font-weight: bold;
+            color: var(--text-primary);
+            font-size: 0.75em;
+            font-weight: 800;
         }
 
-        .remove-btn {
-            width: 20px;
-            height: 20px;
+        .tag-remove {
+            width: 18px;
+            height: 18px;
             background: var(--danger);
             border: none;
             border-radius: 50%;
             color: white;
             cursor: pointer;
-            font-size: 0.8em;
+            font-size: 0.75em;
             display: flex;
             align-items: center;
             justify-content: center;
+            line-height: 1;
         }
 
-        .quick-add { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+        .quick-add {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
 
-        .quick-add-btn {
+        .quick-btn {
             padding: 5px 10px;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            color: #dfe6e9;
+            background: rgba(74, 144, 226, 0.1);
+            border: 1px solid rgba(74, 144, 226, 0.3);
+            border-radius: 12px;
+            color: var(--primary-dark);
             cursor: pointer;
-            font-size: 0.7em;
+            font-size: 0.68em;
+            font-weight: 700;
+            transition: all 0.3s;
         }
 
-        .refresh-btn {
-            display: block;
-            margin: 15px auto;
-            padding: 18px 30px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .quick-btn:active {
+            background: var(--primary);
             color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1.2em;
-            font-weight: bold;
-            width: 100%;
-            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
         }
 
-        .refresh-btn:active { transform: scale(0.95); }
-
-        /* زر الفحص التلقائي */
-        .auto-scan-controls {
+        /* ==================== الفحص التلقائي ==================== */
+        .scan-controls {
             display: flex;
             gap: 10px;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
+            margin-bottom: 10px;
         }
 
-        .auto-scan-btn {
-            padding: 12px 25px;
+        .scan-btn {
+            padding: 12px 24px;
             border: none;
             border-radius: 25px;
-            font-weight: bold;
-            font-size: 0.9em;
+            font-weight: 800;
+            font-size: 0.85em;
             cursor: pointer;
             transition: all 0.3s;
             color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .auto-scan-btn.start {
-            background: linear-gradient(135deg, #00b894, #00d2a0);
-            box-shadow: 0 0 15px rgba(0, 184, 148, 0.5);
+        .scan-btn.start {
+            background: linear-gradient(135deg, var(--success), #26a69a);
         }
 
-        .auto-scan-btn.stop {
-            background: linear-gradient(135deg, #ff7675, #ff8a80);
-            box-shadow: 0 0 15px rgba(255, 118, 117, 0.5);
+        .scan-btn.stop {
+            background: linear-gradient(135deg, var(--danger), #e53935);
+            animation: pulseRed 2s infinite;
         }
 
-        .auto-scan-btn:active { transform: scale(0.95); }
+        @keyframes pulseRed {
+            0%, 100% { box-shadow: 0 4px 12px rgba(255, 82, 82, 0.3); }
+            50% { box-shadow: 0 4px 25px rgba(255, 82, 82, 0.7); }
+        }
+
+        .scan-btn:active { transform: scale(0.95); }
 
         .scan-status {
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 15px;
-            font-size: 0.75em;
-            font-weight: bold;
+            font-size: 0.72em;
+            font-weight: 800;
         }
 
-        .scan-active {
-            background: rgba(0, 184, 148, 0.2);
+        .status-running {
+            background: rgba(0, 200, 83, 0.2);
             color: var(--success);
             animation: pulse 2s infinite;
         }
 
-        .scan-inactive {
-            background: rgba(255, 255, 255, 0.05);
-            color: #666;
+        .status-stopped {
+            background: rgba(158, 158, 158, 0.15);
+            color: #757575;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
         .scan-info {
             text-align: center;
-            margin-top: 10px;
-            font-size: 0.7em;
-            color: #666;
+            font-size: 0.68em;
+            color: var(--text-secondary);
+            margin-top: 8px;
         }
 
-        .stock-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
+        /* ==================== شروط VSA ==================== */
+        .vsa-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin: 10px 0;
+        }
+
+        .vsa-item {
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        .vsa-pass {
+            background: rgba(0, 200, 83, 0.12);
+            border: 1px solid rgba(0, 200, 83, 0.4);
+            color: #00802b;
+        }
+
+        .vsa-fail {
+            background: rgba(255, 82, 82, 0.08);
+            border: 1px solid rgba(255, 82, 82, 0.25);
+            color: #c62828;
+        }
+
+        /* ==================== بطاقة التوصية ==================== */
+        .recommendation-card {
+            background: var(--card-bg-solid);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
             position: relative;
             overflow: hidden;
-            animation: cardAppear 0.5s ease;
+            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.15);
+            animation: slideIn 0.5s ease;
         }
 
-        @keyframes cardAppear {
+        @keyframes slideIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .stock-card::before {
+        .recommendation-card.golden {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFFFFF 100%);
+            box-shadow: 0 8px 30px rgba(255, 193, 7, 0.4);
+        }
+
+        .recommendation-card.locked {
+            opacity: 0.7;
+            border-color: var(--warning);
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFFFFF 100%);
+        }
+
+        .recommendation-card::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
             right: 0;
+            left: 0;
             height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
 
-        .stock-card.buy-card::before { background: linear-gradient(90deg, #00b894, #00d2a0); }
-        .stock-card.hold-card::before { background: linear-gradient(90deg, #fdcb6e, #ffe082); }
-        .stock-card.pinned { border-color: var(--primary); box-shadow: 0 0 20px rgba(108, 92, 231, 0.5); }
-        .stock-card.golden { 
-            border-color: #fdcb6e; 
-            box-shadow: 0 0 30px rgba(253, 203, 110, 0.6);
-            background: linear-gradient(135deg, rgba(253, 203, 110, 0.05), rgba(26, 26, 46, 1));
+        .recommendation-card.golden::before {
+            background: linear-gradient(90deg, var(--gold), #ff9800);
         }
 
-        .golden-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(135deg, #fdcb6e, #f39c12);
-            color: #333;
+        .rec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .rec-symbol {
+            font-size: 1.3em;
+            font-weight: 900;
+            color: var(--text-primary);
+        }
+
+        .rec-badge {
             padding: 5px 12px;
             border-radius: 15px;
-            font-size: 0.7em;
-            font-weight: bold;
-            animation: goldPulse 1.5s infinite;
+            font-size: 0.72em;
+            font-weight: 800;
+            color: white;
+        }
+
+        .badge-golden {
+            background: linear-gradient(135deg, var(--gold), #ff9800);
+            color: #333;
+            animation: goldPulse 2s infinite;
         }
 
         @keyframes goldPulse {
-            0%, 100% { box-shadow: 0 0 10px rgba(253, 203, 110, 0.5); }
-            50% { box-shadow: 0 0 25px rgba(253, 203, 110, 1); }
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 193, 7, 1); }
         }
 
-        .stock-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
+        .badge-buy {
+            background: linear-gradient(135deg, var(--success), #26a69a);
         }
 
-        .stock-symbol { font-size: 1.3em; font-weight: bold; color: white; }
-
-        .pin-btn {
-            padding: 5px 10px;
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            color: white;
-            cursor: pointer;
-            font-size: 0.8em;
-            margin-right: 5px;
+        .badge-locked {
+            background: linear-gradient(135deg, var(--warning), #f57c00);
+            color: #333;
         }
 
-        .pin-btn.pinned { background: var(--primary); border-color: var(--primary); }
-
-        .recommendation-badge {
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.85em;
+        .rec-price {
+            font-size: 1.6em;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin: 6px 0;
         }
 
-        .rec-buy { background: linear-gradient(135deg, #00b894, #00d2a0); color: white; animation: recPulse 2s infinite; }
-        .rec-golden { background: linear-gradient(135deg, #fdcb6e, #f39c12); color: #333; animation: goldPulse 1.5s infinite; }
-        .rec-hold { background: linear-gradient(135deg, #fdcb6e, #ffe082); color: #333; }
-
-        @keyframes recPulse {
-            0%, 100% { box-shadow: 0 0 10px rgba(0, 184, 148, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(0, 184, 148, 0.6); }
+        .rec-vsa-score {
+            text-align: center;
+            padding: 8px;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(123, 104, 238, 0.1));
+            border-radius: 10px;
+            font-size: 0.82em;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 8px 0;
         }
 
-        .price-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 10px 0;
-            padding: 12px;
-            background: var(--glass);
-            border-radius: 12px;
-        }
-
-        .current-price { font-size: 1.5em; font-weight: bold; color: white; }
-        .price-change { font-size: 0.9em; font-weight: bold; }
-        .positive { color: var(--success); }
-        .negative { color: var(--danger); }
-
-        /* النقاط الأربع - منفصلة */
-        .vsa-conditions {
+        .rec-levels {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin: 12px 0;
-        }
-
-        .vsa-condition {
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 0.75em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-
-        .vsa-pass {
-            background: rgba(0, 184, 148, 0.15);
-            border: 1px solid var(--success);
-            color: #00d2a0;
-        }
-
-        .vsa-fail {
-            background: rgba(255, 118, 117, 0.1);
-            border: 1px solid rgba(255, 118, 117, 0.3);
-            color: #ff8a80;
-        }
-
-        .vsa-score {
-            text-align: center;
+            gap: 6px;
             margin: 10px 0;
-            padding: 10px;
-            background: var(--glass);
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: bold;
-            color: white;
         }
 
-        .vsa-score-value {
-            color: var(--primary);
-            font-size: 1.3em;
-        }
-
-        .trade-levels {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin: 12px 0;
-        }
-
-        .level-box {
-            padding: 10px;
+        .level-item {
+            padding: 8px;
             border-radius: 10px;
             text-align: center;
-            border: 1px solid var(--border);
         }
 
-        .entry-box { background: rgba(108, 92, 231, 0.1); }
-        .sl-box { background: rgba(255, 118, 117, 0.1); border-color: rgba(255, 118, 117, 0.3); }
-        .tp1-box { background: rgba(0, 184, 148, 0.1); border-color: rgba(0, 184, 148, 0.3); }
-        .tp2-box { background: rgba(0, 184, 148, 0.15); border-color: rgba(0, 184, 148, 0.4); }
-        .tp3-box { background: rgba(0, 184, 148, 0.2); border-color: rgba(0, 184, 148, 0.5); }
+        .level-entry { background: rgba(74, 144, 226, 0.1); border: 1px solid rgba(74, 144, 226, 0.3); }
+        .level-sl { background: rgba(255, 82, 82, 0.1); border: 1px solid rgba(255, 82, 82, 0.3); }
+        .level-tp1 { background: rgba(0, 200, 83, 0.1); border: 1px solid rgba(0, 200, 83, 0.3); }
+        .level-tp2 { background: rgba(0, 200, 83, 0.15); border: 1px solid rgba(0, 200, 83, 0.4); }
+        .level-tp3 { background: rgba(0, 200, 83, 0.2); border: 1px solid rgba(0, 200, 83, 0.5); }
 
-        .level-label { font-size: 0.75em; opacity: 0.8; margin-bottom: 5px; color: #dfe6e9; }
-        .level-value { font-size: 1.1em; font-weight: bold; color: white; }
+        .level-label {
+            font-size: 0.65em;
+            color: var(--text-secondary);
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .level-value {
+            font-size: 0.9em;
+            font-weight: 900;
+            color: var(--text-primary);
+        }
+
         .level-value.sl { color: var(--danger); }
         .level-value.tp { color: var(--success); }
 
-        .volume-info {
-            text-align: center;
-            margin: 8px 0;
-            padding: 6px;
-            background: var(--glass);
-            border-radius: 8px;
-            font-size: 0.8em;
-            color: #dfe6e9;
+        .approve-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
         }
 
-        .result-buttons {
+        .approve-btn:active { transform: scale(0.97); }
+
+        .approve-btn:disabled {
+            background: #9e9e9e;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .result-btns {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin: 10px 0;
+            gap: 6px;
+            margin-top: 8px;
         }
 
         .result-btn {
@@ -566,41 +695,47 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 0.75em;
-            font-weight: bold;
+            font-size: 0.7em;
+            font-weight: 800;
             color: white;
+            transition: all 0.3s;
         }
 
-        .tp-hit { background: var(--success); }
-        .sl-hit { background: var(--danger); }
-        .no-hit { background: var(--warning); color: #333; }
+        .result-btn:active { transform: scale(0.95); }
 
-        .stats-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 20px;
-        }
+        .btn-tp { background: var(--success); }
+        .btn-sl { background: var(--danger); }
+        .btn-no { background: var(--warning); color: #333; }
 
-        .stats-title { text-align: center; font-size: 1.2em; font-weight: bold; color: white; margin-bottom: 15px; }
-
+        /* ==================== الإحصائيات ==================== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .stat-card {
             padding: 12px;
             border-radius: 12px;
             text-align: center;
-            border: 1px solid var(--border);
-            background: var(--glass);
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.08), rgba(123, 104, 238, 0.08));
+            border: 1px solid rgba(74, 144, 226, 0.2);
         }
 
-        .stat-label { font-size: 0.7em; color: #dfe6e9; opacity: 0.7; margin-bottom: 5px; }
-        .stat-value { font-size: 1.2em; font-weight: bold; color: white; }
+        .stat-label {
+            font-size: 0.68em;
+            color: var(--text-secondary);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.4em;
+            font-weight: 900;
+            color: var(--text-primary);
+        }
+
         .stat-value.success { color: var(--success); }
         .stat-value.danger { color: var(--danger); }
         .stat-value.warning { color: var(--warning); }
@@ -608,185 +743,277 @@
         .stats-summary {
             display: flex;
             justify-content: space-around;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.08), rgba(123, 104, 238, 0.08));
+            border-radius: 12px;
+            border: 1px solid rgba(74, 144, 226, 0.2);
+            margin-bottom: 15px;
         }
 
         .summary-item { text-align: center; }
-        .summary-label { font-size: 0.7em; color: #dfe6e9; opacity: 0.7; }
-        .summary-value { font-size: 1.1em; font-weight: bold; color: var(--primary); }
+        .summary-label {
+            font-size: 0.65em;
+            color: var(--text-secondary);
+            font-weight: 700;
+        }
+        .summary-value {
+            font-size: 1.1em;
+            font-weight: 900;
+            color: var(--primary-dark);
+            margin-top: 3px;
+        }
 
-        .loading { text-align: center; padding: 30px; color: white; }
+        /* الرسم البياني */
+        .chart-container {
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            border: 1px solid rgba(74, 144, 226, 0.15);
+        }
 
-        .loading-spinner {
+        .chart-title {
+            text-align: center;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-size: 0.85em;
+            margin-bottom: 12px;
+        }
+
+        /* ==================== حالات ==================== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 3em;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .empty-subtext {
+            font-size: 0.75em;
+            opacity: 0.7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(74, 144, 226, 0.15);
             border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 15px auto;
+            margin: 0 auto 12px;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .install-btn {
+        /* الإشعار الداخلي */
+        .toast {
             position: fixed;
-            bottom: 20px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            border: none;
-            border-radius: 30px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
+            padding: 14px 22px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.5);
             z-index: 9999;
-            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.5);
-        }
-
-        .last-update {
+            font-weight: 800;
+            animation: slideDown 0.5s ease;
+            max-width: 90%;
             text-align: center;
-            color: #dfe6e9;
-            font-size: 0.75em;
-            margin-top: 15px;
-            opacity: 0.6;
         }
 
-        .no-trades {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--warning);
+        .toast.golden {
+            background: linear-gradient(135deg, var(--gold), #ff9800);
+            color: #333;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.6);
         }
 
-        .no-trades-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
+        .toast.success {
+            background: linear-gradient(135deg, var(--success), #26a69a);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translate(-50%, -30px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* إخفاء الأزرار الافتراضية */
+        .hidden { display: none !important; }
+
+        /* شارة القفل */
+        .lock-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--warning);
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.65em;
+            font-weight: 800;
         }
     </style>
 </head>
 <body>
-    <div class="background-animation"></div>
+    <!-- الخلفية المتحركة -->
+    <div class="bg-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
     
     <div class="container">
         <!-- الشريط العلوي -->
         <div class="top-bar">
             <div class="logo">
                 <div class="logo-icon">📈</div>
-                <div>
-                    <div class="logo-text">StockPro</div>
-                    <div class="vsa-badge">VSA</div>
+                <div class="logo-info">
+                    <div class="logo-name">StockPro</div>
+                    <div class="logo-version">V1.0</div>
                 </div>
             </div>
-            <div>
+            <div class="lang-btns">
                 <button class="lang-btn active" onclick="setLanguage('ar')">عربي</button>
                 <button class="lang-btn" onclick="setLanguage('en')">EN</button>
             </div>
         </div>
         
-        <!-- ترويسة -->
-        <div class="market-header">
-            <h1>📈 تحليل الحجم والسعر (VSA)</h1>
-            <p>نظام المؤسسات الاحترافي</p>
-            <div class="expert-badge">⚡ فحص تلقائي مستمر</div>
-        </div>
-        
-        <!-- الوقت -->
+        <!-- بطاقات الوقت -->
         <div class="time-display">
             <div class="time-card">
-                <div class="time-icon">🇦🇪</div>
+                <div class="time-flag">🇦🇪</div>
                 <div class="time-label">الإمارات</div>
                 <div class="time-value" id="uae-time">--:--:--</div>
             </div>
             <div class="time-card">
-                <div class="time-icon">🇺🇸</div>
+                <div class="time-flag">🇺🇸</div>
                 <div class="time-label">أمريكا</div>
                 <div class="time-value" id="usa-time">--:--:--</div>
             </div>
             <div class="time-card">
-                <div class="time-icon">📊</div>
+                <div class="time-flag">📊</div>
                 <div class="time-label">السوق</div>
                 <div class="time-value" id="market-status">--</div>
             </div>
         </div>
         
-        <!-- إعدادات API -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection('api-content', 'api-icon')">
-                <div>
-                    <div class="section-title">🔑 إعدادات Finnhub API</div>
-                    <div id="api-status" class="api-status api-disconnected">غير متصل</div>
+        <!-- التبويبات -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('analysis', this)">
+                <span class="tab-icon">🔍</span>
+                <span>التحليل</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('recommendations', this)">
+                <span class="tab-icon">🎯</span>
+                <span>التوصيات</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('stats', this)">
+                <span class="tab-icon">📊</span>
+                <span>الإحصائيات</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('settings', this)">
+                <span class="tab-icon">⚙️</span>
+                <span>الإعدادات</span>
+            </button>
+        </div>
+        
+        <!-- ==================== تبويب التحليل ==================== -->
+        <div class="tab-content active" id="tab-analysis">
+            <!-- زر البحث -->
+            <button class="btn-primary btn-large" onclick="startManualScan()" id="scan-now-btn">
+                🔍 بدء البحث الآن
+            </button>
+            
+            <!-- الفحص التلقائي -->
+            <div class="card" style="margin-top: 12px;">
+                <div class="card-title" style="text-align: center; margin-bottom: 10px;">🤖 الفحص التلقائي</div>
+                <div class="scan-controls">
+                    <button class="scan-btn start" id="auto-scan-btn" onclick="toggleAutoScan()">
+                        ▶️ تشغيل
+                    </button>
+                    <div class="scan-status status-stopped" id="scan-status">متوقف</div>
                 </div>
-                <div class="toggle-icon" id="api-icon">▼</div>
+                <div class="scan-info">
+                    ⚡ كل 5 دقائق | 📊 3 أسهم/دورة | 🔔 تنبيه تلقائي
+                </div>
             </div>
-            <div class="section-content" id="api-content">
-                <div class="api-input-group">
-                    <input type="text" class="api-input" id="api-key-input" placeholder="أدخل مفتاح Finnhub API">
-                    <button class="save-btn" onclick="saveApiKey()">حفظ</button>
+            
+            <!-- شروط البحث -->
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('conditions-body', 'conditions-arrow')">
+                    <div class="card-title">📋 شروط البحث (VSA)</div>
+                    <div class="toggle-arrow" id="conditions-arrow">▼</div>
                 </div>
-                <div class="api-info">
-                    للحصول على مفتاح مجاني: <a href="https://finnhub.io" target="_blank" class="api-link">finnhub.io</a>
+                <div class="card-body" id="conditions-body">
+                    <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
+                        ✅ الشرط 1: تصحيح بحجم منخفض (Recent volume < 60% of avg)
+                    </div>
+                    <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
+                        ✅ الشرط 2: حجم ميت عند القاع (Last 2 volumes < 30% of avg)
+                    </div>
+                    <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
+                        ✅ الشرط 3: الحجم يعود (Increasing volumes)
+                    </div>
+                    <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
+                        ✅ الشرط 4: السعر يتحول (Close > Open)
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; font-size: 0.8em; color: var(--text-secondary);">
+                        <strong>3/4</strong> = توصية | <strong>4/4</strong> = إشارة ذهبية 🏆
+                    </div>
+                </div>
+            </div>
+            
+            <!-- الأسهم -->
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('stocks-body', 'stocks-arrow')">
+                    <div class="card-title">📊 الأسهم المتابعة (<span id="watchlist-count">0</span>)</div>
+                    <div class="toggle-arrow" id="stocks-arrow">▼</div>
+                </div>
+                <div class="card-body" id="stocks-body">
+                    <div class="stock-tags" id="watchlist-tags"></div>
+                    <div class="quick-add">
+                        <span style="color: var(--text-secondary); font-size: 0.68em; font-weight: 700;">إضافة سريعة:</span>
+                        <button class="quick-btn" onclick="quickAdd('AAPL')">AAPL</button>
+                        <button class="quick-btn" onclick="quickAdd('MSFT')">MSFT</button>
+                        <button class="quick-btn" onclick="quickAdd('NVDA')">NVDA</button>
+                        <button class="quick-btn" onclick="quickAdd('AMD')">AMD</button>
+                        <button class="quick-btn" onclick="quickAdd('TSLA')">TSLA</button>
+                        <button class="quick-btn" onclick="quickAdd('META')">META</button>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <!-- إدارة الأسهم -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection('watchlist-content', 'watchlist-icon')">
-                <div class="section-title">📋 إدارة الأسهم</div>
-                <div class="toggle-icon" id="watchlist-icon">▼</div>
-            </div>
-            <div class="section-content" id="watchlist-content">
-                <div class="add-stock-form">
-                    <input type="text" class="stock-input" id="stock-input" placeholder="أدخل رمز السهم (AAPL)">
-                    <button class="add-btn" onclick="addStock()">إضافة</button>
-                </div>
-                <div class="watchlist-tags" id="watchlist-tags"></div>
-                <div class="quick-add">
-                    <span style="color: #666; font-size: 0.7em;">إضافة سريعة:</span>
-                    <button class="quick-add-btn" onclick="quickAdd('AAPL')">AAPL</button>
-                    <button class="quick-add-btn" onclick="quickAdd('MSFT')">MSFT</button>
-                    <button class="quick-add-btn" onclick="quickAdd('NVDA')">NVDA</button>
-                    <button class="quick-add-btn" onclick="quickAdd('AMD')">AMD</button>
-                    <button class="quick-add-btn" onclick="quickAdd('TSLA')">TSLA</button>
-                    <button class="quick-add-btn" onclick="quickAdd('META')">META</button>
+        <!-- ==================== تبويب التوصيات ==================== -->
+        <div class="tab-content" id="tab-recommendations">
+            <div id="recommendations-container">
+                <div class="empty-state">
+                    <div class="empty-icon">🎯</div>
+                    <div class="empty-text">لا توجد توصيات حالياً</div>
+                    <div class="empty-subtext">اذهب لتبويب التحليل وابدأ البحث</div>
                 </div>
             </div>
         </div>
         
-        <!-- الفحص التلقائي -->
-        <div class="section">
-            <div class="section-title" style="text-align: center; margin-bottom: 15px;">🤖 الفحص التلقائي (VSA)</div>
-            <div class="auto-scan-controls">
-                <button id="auto-scan-btn" class="auto-scan-btn start" onclick="toggleAutoScan()">
-                    ▶️ تشغيل الفحص التلقائي
-                </button>
-                <div id="scan-status" class="scan-status scan-inactive">متوقف</div>
-            </div>
-            <div class="scan-info">
-                ⚡ كل 5 دقائق | 📊 3 أسهم/دورة | 🔔 تنبيه عند إشارة 3/4 أو 4/4
-            </div>
-        </div>
-        
-        <!-- زر الفحص اليدوي -->
-        <button class="refresh-btn" onclick="runManualScan()">
-            🔍 فحص يدوي شامل الآن
-        </button>
-        
-        <!-- التوصيات -->
-        <div id="stock-recommendations">
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <div>اضغط على زر الفحص لعرض التوصيات...</div>
-            </div>
-        </div>
-        
-        <!-- الإحصائيات -->
-        <div class="stats-section">
-            <div class="stats-title">📊 إحصائيات التداول</div>
+        <!-- ==================== تبويب الإحصائيات ==================== -->
+        <div class="tab-content" id="tab-stats">
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">✅ TP1</div>
@@ -804,44 +1031,103 @@
                     <div class="stat-label">❌ SL</div>
                     <div class="stat-value danger" id="sl-hits">0</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" style="grid-column: span 2;">
                     <div class="stat-label">⚪ No Loss No TP</div>
                     <div class="stat-value warning" id="noltp-hits">0</div>
                 </div>
             </div>
+            
             <div class="stats-summary">
                 <div class="summary-item">
-                    <div class="summary-label">نسبة الربح</div>
+                    <div class="summary-label">نسبة النجاح</div>
                     <div class="summary-value" id="win-rate">0%</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-label">إجمالي الصفقات</div>
+                    <div class="summary-label">إجمالي التوصيات</div>
                     <div class="summary-value" id="total-trades">0</div>
                 </div>
             </div>
+            
+            <div class="chart-container">
+                <div class="chart-title">📊 التوصيات مقابل النتائج</div>
+                <canvas id="stats-chart"></canvas>
+            </div>
         </div>
         
-        <!-- آخر تحديث -->
-        <div class="last-update" id="last-update">لم يتم الفحص بعد</div>
+        <!-- ==================== تبويب الإعدادات ==================== -->
+        <div class="tab-content" id="tab-settings">
+            <!-- مفتاح Finnhub -->
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('api-body', 'api-arrow')">
+                    <div>
+                        <div class="card-title">🔑 مفتاح Finnhub API</div>
+                        <div class="badge badge-disconnected" id="api-badge" style="margin-top: 4px;">غير متصل</div>
+                    </div>
+                    <div class="toggle-arrow" id="api-arrow">▼</div>
+                </div>
+                <div class="card-body" id="api-body">
+                    <div class="input-group">
+                        <input type="text" class="input" id="api-key-input" placeholder="أدخل مفتاح Finnhub">
+                        <button class="btn-primary" onclick="saveApiKey()">حفظ</button>
+                    </div>
+                    <div class="hint-text">
+                        احصل على مفتاح مجاني من <a href="https://finnhub.io" target="_blank">finnhub.io</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- الأسهم المتابعة -->
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('watchlist-settings-body', 'watchlist-settings-arrow')">
+                    <div class="card-title">📋 الأسهم المتابعة</div>
+                    <div class="toggle-arrow" id="watchlist-settings-arrow">▼</div>
+                </div>
+                <div class="card-body" id="watchlist-settings-body">
+                    <div class="input-group">
+                        <input type="text" class="input" id="stock-input-settings" placeholder="أدخل رمز السهم">
+                        <button class="btn-primary" onclick="addStock()">إضافة</button>
+                    </div>
+                    <div class="stock-tags" id="watchlist-tags-settings"></div>
+                </div>
+            </div>
+            
+            <!-- معلومات -->
+            <div class="card">
+                <div style="text-align: center; padding: 10px;">
+                    <div style="font-size: 1.5em; margin-bottom: 8px;">📈</div>
+                    <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">StockPro V1.0</div>
+                    <div style="font-size: 0.75em; color: var(--text-secondary);">
+                        نظام التداول الذكي بنظام VSA
+                    </div>
+                    <div style="font-size: 0.7em; color: var(--text-secondary); margin-top: 8px;">
+                        © 2026 - جميع الحقوق محفوظة
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         // ==================== المتغيرات ====================
+        const APP_VERSION = '1.0';
         let currentLanguage = 'ar';
         let apiKey = localStorage.getItem('finnhub_api_key') || '';
         let watchlist = JSON.parse(localStorage.getItem('watchlist') || '["AAPL","MSFT","NVDA","AMD","TSLA","META"]');
-        let pinnedStocks = JSON.parse(localStorage.getItem('pinned_stocks') || '[]');
-        let currentStocks = [];
+        let recommendations = JSON.parse(localStorage.getItem('recommendations') || '[]');
         let weeklyStats = JSON.parse(localStorage.getItem('weekly_stats') || '{"tp1":0,"tp2":0,"tp3":0,"sl":0,"noltp":0}');
+        let activeRecommendation = JSON.parse(localStorage.getItem('active_recommendation') || 'null');
+        let statsHistory = JSON.parse(localStorage.getItem('stats_history') || '[]');
         
         // إعدادات الفحص التلقائي
-        const AUTO_SCAN_INTERVAL = 5 * 60 * 1000; // 5 دقائق
+        const AUTO_SCAN_INTERVAL = 5 * 60 * 1000;
         const MAX_CALLS_PER_MINUTE = 55;
         let apiCallsThisMinute = 0;
         let scanIndex = 0;
         let autoScanTimer = null;
         let lastMinuteReset = Date.now();
         let isAutoScanRunning = false;
+        
+        let statsChart = null;
 
         // ==================== إدارة API ====================
         function resetApiCallCounter() {
@@ -854,12 +1140,7 @@
 
         async function safeApiCall(url) {
             resetApiCallCounter();
-            
-            if (apiCallsThisMinute >= MAX_CALLS_PER_MINUTE) {
-                console.warn('⚠️ تم الوصول لحد API');
-                return null;
-            }
-            
+            if (apiCallsThisMinute >= MAX_CALLS_PER_MINUTE) return null;
             try {
                 apiCallsThisMinute++;
                 const response = await fetch(url);
@@ -877,81 +1158,39 @@
             if (key) {
                 apiKey = key;
                 localStorage.setItem('finnhub_api_key', key);
-                updateApiStatus();
-                alert('✅ تم حفظ المفتاح!');
+                updateApiBadge();
+                showToast('✅ تم حفظ المفتاح بنجاح!', 'success');
             }
         }
 
-        function updateApiStatus() {
-            const statusElement = document.getElementById('api-status');
+        function updateApiBadge() {
+            const badge = document.getElementById('api-badge');
             const input = document.getElementById('api-key-input');
             if (apiKey) {
-                statusElement.textContent = '✅ متصل';
-                statusElement.className = 'api-status api-connected';
-                input.value = apiKey;
+                badge.textContent = '✅ متصل';
+                badge.className = 'badge badge-connected';
+                if (input) input.value = apiKey;
             } else {
-                statusElement.textContent = '❌ غير متصل';
-                statusElement.className = 'api-status api-disconnected';
+                badge.textContent = '❌ غير متصل';
+                badge.className = 'badge badge-disconnected';
             }
         }
 
-        // ==================== وظائف مساعدة ====================
-        function toggleSection(contentId, iconId) {
-            document.getElementById(contentId).classList.toggle('open');
-            document.getElementById(iconId).classList.toggle('open');
-        }
-
-        function displayWatchlist() {
-            const container = document.getElementById('watchlist-tags');
-            container.innerHTML = '';
-            watchlist.forEach(symbol => {
-                const tag = document.createElement('div');
-                tag.className = 'stock-tag';
-                tag.innerHTML = `${symbol} <button class="remove-btn" onclick="removeStock('${symbol}')">×</button>`;
-                container.appendChild(tag);
-            });
-        }
-
-        function addStock() {
-            const input = document.getElementById('stock-input');
-            const symbol = input.value.trim().toUpperCase();
-            if (symbol && !watchlist.includes(symbol)) {
-                watchlist.push(symbol);
-                localStorage.setItem('watchlist', JSON.stringify(watchlist));
-                displayWatchlist();
-                input.value = '';
+        // ==================== التبويبات ====================
+        function switchTab(tabName, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            btn.classList.add('active');
+            
+            if (tabName === 'stats') {
+                setTimeout(drawChart, 100);
             }
         }
 
-        function quickAdd(symbol) {
-            if (!watchlist.includes(symbol)) {
-                watchlist.push(symbol);
-                localStorage.setItem('watchlist', JSON.stringify(watchlist));
-                displayWatchlist();
-            }
-        }
-
-        function removeStock(symbol) {
-            watchlist = watchlist.filter(s => s !== symbol);
-            localStorage.setItem('watchlist', JSON.stringify(watchlist));
-            displayWatchlist();
-        }
-
-        function togglePin(symbol) {
-            if (pinnedStocks.includes(symbol)) {
-                pinnedStocks = pinnedStocks.filter(s => s !== symbol);
-            } else {
-                pinnedStocks.push(symbol);
-            }
-            localStorage.setItem('pinned_stocks', JSON.stringify(pinnedStocks));
-            displayStocks(currentStocks);
-        }
-
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            updateTimes();
+        function toggleCard(bodyId, arrowId) {
+            document.getElementById(bodyId).classList.toggle('open');
+            document.getElementById(arrowId).classList.toggle('open');
         }
 
         // ==================== الوقت ====================
@@ -988,7 +1227,47 @@
             return currentTime >= 570 && currentTime <= 960;
         }
 
-        // ==================== تحليل VSA (4 نقاط منفصلة) ====================
+        // ==================== الأسهم ====================
+        function displayWatchlist() {
+            const html = watchlist.map(symbol => `
+                <div class="stock-tag">
+                    ${symbol}
+                    <button class="tag-remove" onclick="removeStock('${symbol}')">×</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('watchlist-tags').innerHTML = html;
+            const settingsTags = document.getElementById('watchlist-tags-settings');
+            if (settingsTags) settingsTags.innerHTML = html;
+            document.getElementById('watchlist-count').textContent = watchlist.length;
+        }
+
+        function addStock() {
+            const input = document.getElementById('stock-input-settings');
+            const symbol = input.value.trim().toUpperCase();
+            if (symbol && !watchlist.includes(symbol)) {
+                watchlist.push(symbol);
+                localStorage.setItem('watchlist', JSON.stringify(watchlist));
+                displayWatchlist();
+                input.value = '';
+            }
+        }
+
+        function quickAdd(symbol) {
+            if (!watchlist.includes(symbol)) {
+                watchlist.push(symbol);
+                localStorage.setItem('watchlist', JSON.stringify(watchlist));
+                displayWatchlist();
+            }
+        }
+
+        function removeStock(symbol) {
+            watchlist = watchlist.filter(s => s !== symbol);
+            localStorage.setItem('watchlist', JSON.stringify(watchlist));
+            displayWatchlist();
+        }
+
+        // ==================== تحليل VSA ====================
         function analyzeVSA(symbol, quote, candles) {
             const volumes = candles.v || [];
             const closes = candles.c || [];
@@ -1000,40 +1279,28 @@
             
             const avgVolume = volumes.slice(-20).reduce((a, b) => a + b, 0) / 20;
             
-            // ===== النقطة 1: تصحيح بحجم منخفض =====
             const recent5Volume = volumes.slice(-5).reduce((a, b) => a + b, 0) / 5;
             const lowVolumePullback = recent5Volume < avgVolume * 0.6;
             
-            // ===== النقطة 2: حجم ميت عند القاع =====
             const last2Volumes = volumes.slice(-2);
             const deadVolumeAtBottom = last2Volumes.every(v => v < avgVolume * 0.3);
             
-            // ===== النقطة 3: الحجم يبدأ يعود =====
             const last3Volumes = volumes.slice(-3);
             const volumeReturning = last3Volumes[2] > last3Volumes[1] && last3Volumes[1] > last3Volumes[0];
             
-            // ===== النقطة 4: السعر يتحول للصعود =====
             const lastClose = closes[closes.length - 1];
             const lastOpen = opens[opens.length - 1];
             const lastLow = lows[lows.length - 1];
             const priceTurning = lastClose > lastOpen && lastClose > lastLow * 1.002;
             
-            const conditions = {
-                lowVolumePullback,
-                deadVolumeAtBottom,
-                volumeReturning,
-                priceTurning
-            };
-            
+            const conditions = { lowVolumePullback, deadVolumeAtBottom, volumeReturning, priceTurning };
             const passedCount = Object.values(conditions).filter(v => v).length;
             const isSignal = passedCount >= 3;
             const isGolden = passedCount === 4;
             
-            // ===== الثقة =====
             let confidence = passedCount * 22 + 5;
             if (isGolden) confidence = 95;
             
-            // ===== المستويات =====
             const recentLow = Math.min(...lows.slice(-5));
             const atr = (Math.max(...highs.slice(-14)) - Math.min(...lows.slice(-14))) / 14;
             const currentPrice = quote.c;
@@ -1047,8 +1314,6 @@
                 confidence,
                 isSignal,
                 isGolden,
-                recommendation: isGolden ? '🏆 إشارة ذهبية' : isSignal ? 'شراء VSA' : 'انتظار',
-                recClass: isGolden ? 'rec-golden' : isSignal ? 'rec-buy' : 'rec-hold',
                 currentPrice,
                 change: quote.d || 0,
                 changePercent: quote.dp || 0,
@@ -1058,11 +1323,10 @@
                 tp2: currentPrice + (risk * 2),
                 tp3: currentPrice + (risk * 3),
                 volumeRatio: (volumes[volumes.length - 1] / avgVolume).toFixed(2),
-                avgVolume
+                timestamp: new Date().toISOString()
             };
         }
 
-        // ==================== تحليل سهم واحد ====================
         async function analyzeSingleStock(symbol) {
             if (!apiKey) return null;
             
@@ -1070,11 +1334,10 @@
             if (!quote || !quote.c) return null;
             
             const now = Math.floor(Date.now() / 1000);
-            const from = now - 3600; // آخر ساعة
+            const from = now - 3600;
             const candles = await safeApiCall(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=5&from=${from}&to=${now}&token=${apiKey}`);
             
             if (!candles || !candles.c || candles.c.length < 20) {
-                // بيانات تجريبية للعرض
                 return getDemoAnalysis(symbol, quote);
             }
             
@@ -1082,12 +1345,10 @@
         }
 
         function getDemoAnalysis(symbol, quote) {
-            // محاكاة بيانات الشموع
             const currentPrice = quote.c || 100;
-            const avgVolume = 1000000;
             
             const conditions = {
-                lowVolumePullback: Math.random() > 0.3,
+                lowVolumePullback: Math.random() > 0.35,
                 deadVolumeAtBottom: Math.random() > 0.5,
                 volumeReturning: Math.random() > 0.4,
                 priceTurning: quote.dp > 0
@@ -1112,8 +1373,6 @@
                 confidence,
                 isSignal,
                 isGolden,
-                recommendation: isGolden ? '🏆 إشارة ذهبية' : isSignal ? 'شراء VSA' : 'انتظار',
-                recClass: isGolden ? 'rec-golden' : isSignal ? 'rec-buy' : 'rec-hold',
                 currentPrice,
                 change: quote.d || 0,
                 changePercent: quote.dp || 0,
@@ -1123,45 +1382,369 @@
                 tp2: currentPrice + (risk * 2),
                 tp3: currentPrice + (risk * 3),
                 volumeRatio: (0.8 + Math.random() * 1.5).toFixed(2),
-                avgVolume
+                timestamp: new Date().toISOString()
             };
         }
 
-        // ==================== الفحص اليدوي الشامل ====================
-        async function runManualScan() {
-            const stockGrid = document.getElementById('stock-recommendations');
-            stockGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>🔍 جاري الفحص الشامل...</div></div>';
+        // ==================== الفحص اليدوي ====================
+        async function startManualScan() {
+            if (!apiKey) {
+                showToast('⚠️ الرجاء إدخال مفتاح Finnhub أولاً', 'warning');
+                return;
+            }
             
-            const signals = [];
+            // تحقق من القفل
+            if (activeRecommendation) {
+                showToast('🔒 لديك توصية نشطة - سجل نتيجتها أولاً', 'warning');
+                return;
+            }
+            
+            const btn = document.getElementById('scan-now-btn');
+            btn.disabled = true;
+            btn.textContent = '🔍 جاري البحث...';
+            
+            const newRecommendations = [];
             
             for (const symbol of watchlist) {
                 try {
                     const analysis = await analyzeSingleStock(symbol);
                     if (analysis && analysis.isSignal) {
-                        signals.push(analysis);
+                        newRecommendations.push(analysis);
                     }
                 } catch (error) {
                     console.error(`Error ${symbol}:`, error);
                 }
             }
             
-            currentStocks = signals;
-            displayStocks(signals);
-            updateLastUpdateTime();
+            btn.disabled = false;
+            btn.textContent = '🔍 بدء البحث الآن';
+            
+            if (newRecommendations.length > 0) {
+                // دمج مع التوصيات السابقة (بدون تكرار)
+                newRecommendations.forEach(newRec => {
+                    if (!recommendations.find(r => r.symbol === newRec.symbol)) {
+                        recommendations.push(newRec);
+                    }
+                });
+                
+                localStorage.setItem('recommendations', JSON.stringify(recommendations));
+                displayRecommendations();
+                
+                // تنبيه
+                const hasGolden = newRecommendations.some(r => r.isGolden);
+                showToast(
+                    hasGolden ? '🏆 تم العثور على إشارة ذهبية!' : `🎯 تم العثور على ${newRecommendations.length} توصية!`,
+                    hasGolden ? 'golden' : 'success'
+                );
+                playNotificationSound();
+                
+                // الانتقال لتبويب التوصيات
+                setTimeout(() => {
+                    switchTab('recommendations', document.querySelectorAll('.tab-btn')[1]);
+                }, 800);
+            } else {
+                showToast('لا توجد إشارات VSA حالياً', 'warning');
+            }
         }
 
-        // ==================== الفحص التلقائي ====================
-        async function autoScan() {
-            if (!apiKey || !isAutoScanRunning) return;
+        // ==================== عرض التوصيات ====================
+        function displayRecommendations() {
+            const container = document.getElementById('recommendations-container');
             
-            if (!isMarketOpen()) {
-                console.log('⏸️ السوق مغلق - الفحص متوقف');
+            if (recommendations.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🎯</div>
+                        <div class="empty-text">لا توجد توصيات حالياً</div>
+                        <div class="empty-subtext">اذهب لتبويب التحليل وابدأ البحث</div>
+                    </div>
+                `;
                 return;
             }
             
-            console.log('🔍 دورة فحص تلقائي...');
+            // ترتيب: النشطة أولاً، ثم الذهبية، ثم الباقي
+            const sorted = [...recommendations].sort((a, b) => {
+                if (a.symbol === activeRecommendation?.symbol) return -1;
+                if (b.symbol === activeRecommendation?.symbol) return 1;
+                if (a.isGolden && !b.isGolden) return -1;
+                if (!a.isGolden && b.isGolden) return 1;
+                return 0;
+            });
             
-            // فحص 3 أسهم بالتدوير
+            container.innerHTML = sorted.map(rec => {
+                const isActive = activeRecommendation?.symbol === rec.symbol;
+                const isLocked = activeRecommendation && !isActive;
+                const cardClass = rec.isGolden ? 'golden' : '';
+                const lockedClass = isLocked ? 'locked' : '';
+                const badgeClass = rec.isGolden ? 'badge-golden' : 'badge-buy';
+                const badgeText = rec.isGolden ? '🏆 إشارة ذهبية' : '✅ شراء VSA';
+                
+                return `
+                    <div class="recommendation-card ${cardClass} ${lockedClass}">
+                        ${isLocked ? '<div class="lock-badge">🔒 مقفول</div>' : ''}
+                        
+                        <div class="rec-header">
+                            <div class="rec-symbol">${rec.symbol}</div>
+                            <div class="rec-badge ${isActive ? 'badge-locked' : badgeClass}">
+                                ${isActive ? '🔒 نشطة' : badgeText}
+                            </div>
+                        </div>
+                        
+                        <div class="rec-price">$${rec.currentPrice.toFixed(2)}</div>
+                        
+                        <div class="rec-vsa-score">
+                            نقاط VSA: <strong>${rec.passedCount}/4</strong> 
+                            ${rec.isGolden ? '🏆' : ''}
+                            | الحجم: ${rec.volumeRatio}x
+                        </div>
+                        
+                        <div class="vsa-grid">
+                            <div class="vsa-item ${rec.conditions.lowVolumePullback ? 'vsa-pass' : 'vsa-fail'}">
+                                ${rec.conditions.lowVolumePullback ? '✅' : '❌'} تصحيح بحجم منخفض
+                            </div>
+                            <div class="vsa-item ${rec.conditions.deadVolumeAtBottom ? 'vsa-pass' : 'vsa-fail'}">
+                                ${rec.conditions.deadVolumeAtBottom ? '✅' : '❌'} حجم ميت عند القاع
+                            </div>
+                            <div class="vsa-item ${rec.conditions.volumeReturning ? 'vsa-pass' : 'vsa-fail'}">
+                                ${rec.conditions.volumeReturning ? '✅' : '❌'} الحجم يعود
+                            </div>
+                            <div class="vsa-item ${rec.conditions.priceTurning ? 'vsa-pass' : 'vsa-fail'}">
+                                ${rec.conditions.priceTurning ? '✅' : '❌'} السعر يتحول
+                            </div>
+                        </div>
+                        
+                        <div class="rec-levels">
+                            <div class="level-item level-entry">
+                                <div class="level-label">📍 الدخول</div>
+                                <div class="level-value">$${rec.entry.toFixed(2)}</div>
+                            </div>
+                            <div class="level-item level-sl">
+                                <div class="level-label">🛑 الوقف</div>
+                                <div class="level-value sl">$${rec.stopLoss.toFixed(2)}</div>
+                            </div>
+                            <div class="level-item level-tp1">
+                                <div class="level-label">🎯 TP1</div>
+                                <div class="level-value tp">$${rec.tp1.toFixed(2)}</div>
+                            </div>
+                            <div class="level-item level-tp2">
+                                <div class="level-label">🎯 TP2</div>
+                                <div class="level-value tp">$${rec.tp2.toFixed(2)}</div>
+                            </div>
+                            <div class="level-item level-tp3" style="grid-column: span 2;">
+                                <div class="level-label">🎯 TP3</div>
+                                <div class="level-value tp">$${rec.tp3.toFixed(2)}</div>
+                            </div>
+                        </div>
+                        
+                        ${isActive ? `
+                            <div class="result-btns">
+                                <button class="result-btn btn-tp" onclick="recordResult('tp1')">✅ TP1</button>
+                                <button class="result-btn btn-tp" onclick="recordResult('tp2')">✅ TP2</button>
+                                <button class="result-btn btn-tp" onclick="recordResult('tp3')">✅ TP3</button>
+                                <button class="result-btn btn-sl" onclick="recordResult('sl')">❌ SL</button>
+                                <button class="result-btn btn-no" onclick="recordResult('noltp')">⚪ No</button>
+                            </div>
+                        ` : `
+                            <button class="approve-btn" onclick="approveRecommendation('${rec.symbol}')" ${isLocked ? 'disabled' : ''}>
+                                ${isLocked ? '🔒 مقفول - سجل التوصية النشطة أولاً' : '✅ اعتماد التوصية'}
+                            </button>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== اعتماد التوصية ====================
+        function approveRecommendation(symbol) {
+            if (activeRecommendation) {
+                showToast('🔒 لديك توصية نشطة - سجل نتيجتها أولاً', 'warning');
+                return;
+            }
+            
+            const rec = recommendations.find(r => r.symbol === symbol);
+            if (!rec) return;
+            
+            activeRecommendation = rec;
+            localStorage.setItem('active_recommendation', JSON.stringify(rec));
+            
+            showToast('✅ تم اعتماد التوصية - البحث مقفول الآن', 'success');
+            playNotificationSound();
+            displayRecommendations();
+        }
+
+        // ==================== تسجيل النتائج ====================
+        function recordResult(result) {
+            if (!activeRecommendation) return;
+            
+            if (result === 'tp1') weeklyStats.tp1++;
+            else if (result === 'tp2') weeklyStats.tp2++;
+            else if (result === 'tp3') weeklyStats.tp3++;
+            else if (result === 'sl') weeklyStats.sl++;
+            else if (result === 'noltp') weeklyStats.noltp++;
+            
+            // إضافة للسجل
+            statsHistory.push({
+                symbol: activeRecommendation.symbol,
+                result: result,
+                timestamp: new Date().toISOString()
+            });
+            
+            localStorage.setItem('weekly_stats', JSON.stringify(weeklyStats));
+            localStorage.setItem('stats_history', JSON.stringify(statsHistory));
+            
+            // إزالة التوصية النشطة
+            activeRecommendation = null;
+            localStorage.removeItem('active_recommendation');
+            
+            // إزالة من قائمة التوصيات
+            recommendations = recommendations.filter(r => 
+                r.symbol !== (JSON.parse(localStorage.getItem('active_recommendation') || '{}').symbol)
+            );
+            recommendations = recommendations.filter(r => r.symbol !== activeRecommendation?.symbol);
+            
+            // إزالة كل التوصيات القديمة
+            recommendations = [];
+            localStorage.setItem('recommendations', JSON.stringify([]));
+            
+            updateStatsDisplay();
+            displayRecommendations();
+            
+            showToast(`✅ تم تسجيل ${result.toUpperCase()} - البحث مفتوح الآن`, 'success');
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('tp1-hits').textContent = weeklyStats.tp1;
+            document.getElementById('tp2-hits').textContent = weeklyStats.tp2;
+            document.getElementById('tp3-hits').textContent = weeklyStats.tp3;
+            document.getElementById('sl-hits').textContent = weeklyStats.sl;
+            document.getElementById('noltp-hits').textContent = weeklyStats.noltp;
+            
+            const total = weeklyStats.tp1 + weeklyStats.tp2 + weeklyStats.tp3 + weeklyStats.sl + weeklyStats.noltp;
+            const wins = weeklyStats.tp1 + weeklyStats.tp2 + weeklyStats.tp3;
+            const winRate = total > 0 ? (wins / total * 100).toFixed(1) : '0';
+            
+            document.getElementById('win-rate').textContent = winRate + '%';
+            document.getElementById('total-trades').textContent = total;
+        }
+
+        // ==================== الرسم البياني ====================
+        function drawChart() {
+            const canvas = document.getElementById('stats-chart');
+            if (!canvas) return;
+            
+            if (statsChart) statsChart.destroy();
+            
+            const ctx = canvas.getContext('2d');
+            
+            statsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['TP1', 'TP2', 'TP3', 'SL', 'No TP'],
+                    datasets: [{
+                        label: 'عدد التوصيات',
+                        data: [
+                            weeklyStats.tp1,
+                            weeklyStats.tp2,
+                            weeklyStats.tp3,
+                            weeklyStats.sl,
+                            weeklyStats.noltp
+                        ],
+                        backgroundColor: [
+                            'rgba(0, 200, 83, 0.7)',
+                            'rgba(0, 200, 83, 0.85)',
+                            'rgba(0, 200, 83, 1)',
+                            'rgba(255, 82, 82, 0.8)',
+                            'rgba(255, 179, 0, 0.8)'
+                        ],
+                        borderColor: [
+                            '#00c853', '#00c853', '#00c853', '#ff5252', '#ffb300'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#5c6bc0',
+                                font: { weight: 'bold' }
+                            },
+                            grid: { color: 'rgba(74, 144, 226, 0.1)' }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#5c6bc0',
+                                font: { weight: 'bold' }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==================== الفحص التلقائي ====================
+        function toggleAutoScan() {
+            if (isAutoScanRunning) stopAutoScan();
+            else startAutoScan();
+        }
+
+        function startAutoScan() {
+            if (!apiKey) {
+                showToast('⚠️ الرجاء إدخال مفتاح Finnhub أولاً', 'warning');
+                return;
+            }
+            
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+            
+            isAutoScanRunning = true;
+            if (autoScanTimer) clearInterval(autoScanTimer);
+            autoScanTimer = setInterval(autoScan, AUTO_SCAN_INTERVAL);
+            autoScan();
+            updateScanUI();
+        }
+
+        function stopAutoScan() {
+            isAutoScanRunning = false;
+            if (autoScanTimer) {
+                clearInterval(autoScanTimer);
+                autoScanTimer = null;
+            }
+            updateScanUI();
+        }
+
+        function updateScanUI() {
+            const btn = document.getElementById('auto-scan-btn');
+            const status = document.getElementById('scan-status');
+            
+            if (isAutoScanRunning) {
+                btn.textContent = '⏹️ إيقاف';
+                btn.className = 'scan-btn stop';
+                status.textContent = '🟢 يعمل';
+                status.className = 'scan-status status-running';
+            } else {
+                btn.textContent = '▶️ تشغيل';
+                btn.className = 'scan-btn start';
+                status.textContent = 'متوقف';
+                status.className = 'scan-status status-stopped';
+            }
+        }
+
+        async function autoScan() {
+            if (!apiKey || !isAutoScanRunning) return;
+            if (!isMarketOpen()) return;
+            if (activeRecommendation) return; // البحث مقفول
+            
             const batchSize = 3;
             const batch = [];
             for (let i = 0; i < batchSize; i++) {
@@ -1182,51 +1765,39 @@
                 }
             }
             
-            // إذا وجدنا إشارات - نبه!
             if (newSignals.length > 0) {
-                showNotification(newSignals);
-                
-                // دمج مع التوصيات الحالية
-                const combined = [...newSignals];
-                currentStocks.forEach(s => {
-                    if (!combined.find(c => c.symbol === s.symbol)) {
-                        combined.push(s);
+                newSignals.forEach(newRec => {
+                    if (!recommendations.find(r => r.symbol === newRec.symbol)) {
+                        recommendations.push(newRec);
                     }
                 });
                 
-                currentStocks = combined.sort((a, b) => b.passedCount - a.passedCount);
-                displayStocks(currentStocks);
-                updateLastUpdateTime();
+                localStorage.setItem('recommendations', JSON.stringify(recommendations));
+                displayRecommendations();
+                
+                const hasGolden = newSignals.some(r => r.isGolden);
+                showToast(
+                    hasGolden ? '🏆 إشارة ذهبية جديدة!' : `🎯 ${newSignals.length} توصية جديدة!`,
+                    hasGolden ? 'golden' : 'success'
+                );
+                playNotificationSound();
             }
         }
 
-        // ==================== التنبيهات ====================
-        function showNotification(signals) {
-            // اهتزاز
-            if (navigator.vibrate) {
-                navigator.vibrate([300, 100, 300, 100, 300]);
-            }
+        // ==================== الإشعارات ====================
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
             
-            // إشعار المتصفح
-            if ('Notification' in window && Notification.permission === 'granted') {
-                signals.forEach(s => {
-                    const emoji = s.isGolden ? '🏆' : '🎯';
-                    new Notification(`${emoji} ${s.symbol} - ${s.recommendation}`, {
-                        body: `VSA: ${s.passedCount}/4 | الحجم: ${s.volumeRatio}x`,
-                        icon: '📈',
-                        tag: s.symbol
-                    });
-                });
-            }
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            document.body.appendChild(toast);
             
-            // صوت
-            playBeep();
-            
-            // إشعار داخلي
-            showInAppAlert(signals);
+            setTimeout(() => toast.remove(), 4000);
         }
 
-        function playBeep() {
+        function playNotificationSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioCtx.createOscillator();
@@ -1236,261 +1807,32 @@
                 oscillator.frequency.value = 880;
                 gainNode.gain.value = 0.2;
                 oscillator.start();
-                setTimeout(() => oscillator.stop(), 250);
+                setTimeout(() => oscillator.stop(), 200);
+                
+                if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
+                
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('StockPro', { body: 'إشارة جديدة!', icon: '📈' });
+                }
             } catch (e) {}
         }
 
-        function showInAppAlert(signals) {
-            // إزالة أي تنبيه قديم
-            const oldAlert = document.getElementById('in-app-alert');
-            if (oldAlert) oldAlert.remove();
-            
-            const alertDiv = document.createElement('div');
-            alertDiv.id = 'in-app-alert';
-            alertDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: linear-gradient(135deg, #00b894, #00d2a0);
-                color: white;
-                padding: 15px 25px;
-                border-radius: 15px;
-                box-shadow: 0 10px 30px rgba(0, 184, 148, 0.5);
-                z-index: 99999;
-                font-weight: bold;
-                animation: slideDown 0.5s ease;
-                max-width: 90%;
-            `;
-            
-            const signal = signals[0];
-            alertDiv.innerHTML = `
-                <div style="font-size: 1.1em; margin-bottom: 5px;">
-                    ${signal.isGolden ? '🏆 إشارة ذهبية!' : '🎯 إشارة جديدة!'}
-                </div>
-                <div>${signal.symbol} - VSA: ${signal.passedCount}/4</div>
-                <div style="font-size: 0.85em; margin-top: 5px; opacity: 0.9;">
-                    دخول: $${signal.entry.toFixed(2)} | وقف: $${signal.stopLoss.toFixed(2)}
-                </div>
-            `;
-            
-            document.body.appendChild(alertDiv);
-            
-            setTimeout(() => alertDiv.remove(), 5000);
-        }
-
-        // ==================== تشغيل/إيقاف الفحص التلقائي ====================
-        function toggleAutoScan() {
-            if (isAutoScanRunning) {
-                stopAutoScan();
-            } else {
-                startAutoScan();
-            }
-        }
-
-        function startAutoScan() {
-            if (!apiKey) {
-                alert('⚠️ الرجاء إدخال مفتاح Finnhub أولاً');
-                return;
-            }
-            
-            // طلب إذن الإشعارات
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
-            
-            isAutoScanRunning = true;
-            
-            if (autoScanTimer) clearInterval(autoScanTimer);
-            autoScanTimer = setInterval(autoScan, AUTO_SCAN_INTERVAL);
-            
-            // فحص أولي فوري
-            autoScan();
-            
-            updateScanUI();
-            console.log('✅ الفحص التلقائي بدأ');
-        }
-
-        function stopAutoScan() {
-            isAutoScanRunning = false;
-            
-            if (autoScanTimer) {
-                clearInterval(autoScanTimer);
-                autoScanTimer = null;
-            }
-            
-            updateScanUI();
-            console.log('⏹️ الفحص التلقائي توقف');
-        }
-
-        function updateScanUI() {
-            const btn = document.getElementById('auto-scan-btn');
-            const status = document.getElementById('scan-status');
-            
-            if (isAutoScanRunning) {
-                btn.textContent = '⏹️ إيقاف الفحص التلقائي';
-                btn.className = 'auto-scan-btn stop';
-                status.textContent = '🟢 يعمل';
-                status.className = 'scan-status scan-active';
-            } else {
-                btn.textContent = '▶️ تشغيل الفحص التلقائي';
-                btn.className = 'auto-scan-btn start';
-                status.textContent = 'متوقف';
-                status.className = 'scan-status scan-inactive';
-            }
-        }
-
-        // ==================== عرض التوصيات ====================
-        function displayStocks(stocks) {
-            const stockGrid = document.getElementById('stock-recommendations');
-            stockGrid.innerHTML = '';
-            
-            if (stocks.length === 0) {
-                stockGrid.innerHTML = `
-                    <div class="no-trades">
-                        <div class="no-trades-icon">🛡️</div>
-                        <div style="font-size: 1.1em; font-weight: bold; margin-bottom: 10px;">لا توجد إشارات VSA حالياً</div>
-                        <div style="font-size: 0.85em; opacity: 0.8;">انتظر فرصة أفضل - النقد مركز</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            // ترتيب: الذهبية أولاً، ثم المثبتة، ثم الباقي
-            const golden = stocks.filter(s => s.isGolden);
-            const pinned = stocks.filter(s => !s.isGolden && pinnedStocks.includes(s.symbol));
-            const rest = stocks.filter(s => !s.isGolden && !pinnedStocks.includes(s.symbol));
-            const sorted = [...golden, ...pinned, ...rest];
-            
-            sorted.forEach((stock, index) => {
-                const isPinned = pinnedStocks.includes(stock.symbol);
-                
-                const card = document.createElement('div');
-                card.className = `stock-card ${stock.isGolden ? 'golden' : stock.isSignal ? 'buy-card' : 'hold-card'} ${isPinned ? 'pinned' : ''}`;
-                card.style.animationDelay = (index * 0.1) + 's';
-                
-                const changeClass = stock.changePercent >= 0 ? 'positive' : 'negative';
-                const changeSign = stock.changePercent >= 0 ? '+' : '';
-                
-                card.innerHTML = `
-                    ${stock.isGolden ? '<div class="golden-badge">🏆 إشارة ذهبية</div>' : ''}
-                    
-                    <div class="stock-header">
-                        <div>
-                            <div class="stock-symbol">${index + 1}. ${stock.symbol}</div>
-                            <button class="pin-btn ${isPinned ? 'pinned' : ''}" onclick="togglePin('${stock.symbol}')">
-                                ${isPinned ? '📌 مثبت' : '📌 تثبيت'}
-                            </button>
-                        </div>
-                        <div class="recommendation-badge ${stock.recClass}">${stock.recommendation}</div>
-                    </div>
-                    
-                    <div class="price-info">
-                        <span class="current-price">$${stock.currentPrice.toFixed(2)}</span>
-                        <span class="price-change ${changeClass}">
-                            ${changeSign}${stock.changePercent.toFixed(2)}%
-                        </span>
-                    </div>
-                    
-                    <div class="vsa-conditions">
-                        <div class="vsa-condition ${stock.conditions.lowVolumePullback ? 'vsa-pass' : 'vsa-fail'}">
-                            ${stock.conditions.lowVolumePullback ? '✅' : '❌'} تصحيح بحجم منخفض
-                        </div>
-                        <div class="vsa-condition ${stock.conditions.deadVolumeAtBottom ? 'vsa-pass' : 'vsa-fail'}">
-                            ${stock.conditions.deadVolumeAtBottom ? '✅' : '❌'} حجم ميت عند القاع
-                        </div>
-                        <div class="vsa-condition ${stock.conditions.volumeReturning ? 'vsa-pass' : 'vsa-fail'}">
-                            ${stock.conditions.volumeReturning ? '✅' : '❌'} الحجم يعود
-                        </div>
-                        <div class="vsa-condition ${stock.conditions.priceTurning ? 'vsa-pass' : 'vsa-fail'}">
-                            ${stock.conditions.priceTurning ? '✅' : '❌'} السعر يتحول
-                        </div>
-                    </div>
-                    
-                    <div class="vsa-score">
-                        نقاط VSA: <span class="vsa-score-value">${stock.passedCount}/4</span>
-                        ${stock.isGolden ? '🏆' : ''}
-                    </div>
-                    
-                    <div class="volume-info">
-                        📊 نسبة الحجم الحالية: <strong>${stock.volumeRatio}x</strong> من المتوسط
-                    </div>
-                    
-                    <div class="trade-levels">
-                        <div class="level-box entry-box">
-                            <div class="level-label">📍 الدخول</div>
-                            <div class="level-value">$${stock.entry.toFixed(2)}</div>
-                        </div>
-                        <div class="level-box sl-box">
-                            <div class="level-label">🛑 وقف الخسارة</div>
-                            <div class="level-value sl">$${stock.stopLoss.toFixed(2)}</div>
-                        </div>
-                        <div class="level-box tp1-box">
-                            <div class="level-label">🎯 TP1 (1R)</div>
-                            <div class="level-value tp">$${stock.tp1.toFixed(2)}</div>
-                        </div>
-                        <div class="level-box tp2-box">
-                            <div class="level-label">🎯 TP2 (2R)</div>
-                            <div class="level-value tp">$${stock.tp2.toFixed(2)}</div>
-                        </div>
-                        <div class="level-box tp3-box">
-                            <div class="level-label">🎯 TP3 (3R)</div>
-                            <div class="level-value tp">$${stock.tp3.toFixed(2)}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="result-buttons">
-                        <button class="result-btn tp-hit" onclick="recordResult('tp1')">✅ TP1</button>
-                        <button class="result-btn tp-hit" onclick="recordResult('tp2')">✅ TP2</button>
-                        <button class="result-btn tp-hit" onclick="recordResult('tp3')">✅ TP3</button>
-                        <button class="result-btn sl-hit" onclick="recordResult('sl')">❌ SL</button>
-                        <button class="result-btn no-hit" onclick="recordResult('noltp')">⚪ No</button>
-                    </div>
-                `;
-                
-                stockGrid.appendChild(card);
-            });
-        }
-
-        // ==================== تسجيل النتائج ====================
-        function recordResult(result) {
-            if (result === 'tp1') weeklyStats.tp1++;
-            else if (result === 'tp2') weeklyStats.tp2++;
-            else if (result === 'tp3') weeklyStats.tp3++;
-            else if (result === 'sl') weeklyStats.sl++;
-            else if (result === 'noltp') weeklyStats.noltp++;
-            
-            localStorage.setItem('weekly_stats', JSON.stringify(weeklyStats));
-            updateStatsDisplay();
-            alert('✅ تم التسجيل');
-        }
-
-        function updateStatsDisplay() {
-            document.getElementById('tp1-hits').textContent = weeklyStats.tp1;
-            document.getElementById('tp2-hits').textContent = weeklyStats.tp2;
-            document.getElementById('tp3-hits').textContent = weeklyStats.tp3;
-            document.getElementById('sl-hits').textContent = weeklyStats.sl;
-            document.getElementById('noltp-hits').textContent = weeklyStats.noltp;
-            
-            const total = weeklyStats.tp1 + weeklyStats.tp2 + weeklyStats.tp3 + weeklyStats.sl + weeklyStats.noltp;
-            const wins = weeklyStats.tp1 + weeklyStats.tp2 + weeklyStats.tp3;
-            const winRate = total > 0 ? (wins / total * 100).toFixed(1) : '0';
-            
-            document.getElementById('win-rate').textContent = winRate + '%';
-            document.getElementById('total-trades').textContent = total;
-        }
-
-        function updateLastUpdateTime() {
-            document.getElementById('last-update').textContent = 'آخر فحص: ' + new Date().toLocaleTimeString('ar-SA');
+        // ==================== اللغة ====================
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateTimes();
         }
 
         // ==================== بدء التطبيق ====================
         document.addEventListener('DOMContentLoaded', function() {
             updateTimes();
             setInterval(updateTimes, 1000);
-            updateApiStatus();
+            updateApiBadge();
             displayWatchlist();
             updateStatsDisplay();
+            displayRecommendations();
             updateScanUI();
         });
 
@@ -1503,5 +1845,8 @@
             });
         }
     </script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
