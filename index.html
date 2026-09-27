@@ -21,9 +21,6 @@
             --danger: #ff5252;
             --warning: #ffb300;
             --gold: #ffc107;
-            --bg-gradient-1: #E3F2FD;
-            --bg-gradient-2: #BBDEFB;
-            --bg-gradient-3: #C5CAE9;
             --card-bg: rgba(255, 255, 255, 0.85);
             --card-bg-solid: #FFFFFF;
             --glass: rgba(255, 255, 255, 0.6);
@@ -46,13 +43,10 @@
             overflow-x: hidden;
         }
 
-        /* خلفية متحركة ديناميكية */
         .bg-shapes {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: -1;
             overflow: hidden;
             pointer-events: none;
@@ -65,23 +59,9 @@
             animation: floatShape 20s ease-in-out infinite;
         }
 
-        .shape:nth-child(1) {
-            width: 300px; height: 300px;
-            top: -100px; right: -100px;
-            animation-delay: 0s;
-        }
-        .shape:nth-child(2) {
-            width: 400px; height: 400px;
-            bottom: -150px; left: -150px;
-            background: radial-gradient(circle, rgba(123, 104, 238, 0.12) 0%, transparent 70%);
-            animation-delay: -5s;
-        }
-        .shape:nth-child(3) {
-            width: 250px; height: 250px;
-            top: 40%; left: 60%;
-            background: radial-gradient(circle, rgba(0, 200, 83, 0.1) 0%, transparent 70%);
-            animation-delay: -10s;
-        }
+        .shape:nth-child(1) { width: 300px; height: 300px; top: -100px; right: -100px; }
+        .shape:nth-child(2) { width: 400px; height: 400px; bottom: -150px; left: -150px; background: radial-gradient(circle, rgba(123, 104, 238, 0.12) 0%, transparent 70%); animation-delay: -5s; }
+        .shape:nth-child(3) { width: 250px; height: 250px; top: 40%; left: 60%; background: radial-gradient(circle, rgba(0, 200, 83, 0.1) 0%, transparent 70%); animation-delay: -10s; }
 
         @keyframes floatShape {
             0%, 100% { transform: translate(0, 0) scale(1); }
@@ -95,11 +75,10 @@
             padding: 12px;
         }
 
-        /* ==================== الشريط العلوي ==================== */
+        /* الشريط العلوي */
         .top-bar {
             background: linear-gradient(135deg, rgba(74, 144, 226, 0.9), rgba(123, 104, 238, 0.85));
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 18px;
             padding: 12px 18px;
@@ -147,26 +126,38 @@
             margin-top: 2px;
         }
 
-        .lang-btns { display: flex; gap: 6px; }
-
-        .lang-btn {
-            padding: 5px 11px;
+        /* مؤشر حالة الأسعار */
+        .price-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 14px;
-            cursor: pointer;
-            font-size: 0.7em;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.65em;
             font-weight: 700;
-            transition: all 0.3s;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .lang-btn.active {
-            background: white;
-            color: var(--primary-dark);
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ffb300;
+            animation: pulse 1.5s infinite;
         }
 
-        /* ==================== بطاقات الوقت ==================== */
+        .status-dot.realtime { background: #00c853; }
+        .status-dot.delayed { background: #ffb300; }
+        .status-dot.offline { background: #ff5252; animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* بطاقات الوقت */
         .time-display {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -177,7 +168,6 @@
         .time-card {
             background: var(--card-bg);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.7);
             border-radius: 14px;
             padding: 10px 8px;
@@ -200,13 +190,12 @@
         .status-open { color: var(--success) !important; }
         .status-closed { color: var(--danger) !important; }
 
-        /* ==================== التبويبات ==================== */
+        /* التبويبات */
         .tabs {
             display: flex;
             gap: 6px;
             background: var(--glass);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.7);
             border-radius: 16px;
             padding: 5px;
@@ -247,11 +236,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ==================== البطاقات ==================== */
+        /* البطاقات */
         .card {
             background: var(--card-bg);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.7);
             border-radius: 18px;
             padding: 16px;
@@ -280,15 +268,8 @@
             font-weight: 700;
         }
 
-        .badge-connected {
-            background: rgba(0, 200, 83, 0.15);
-            color: var(--success);
-        }
-
-        .badge-disconnected {
-            background: rgba(255, 82, 82, 0.15);
-            color: var(--danger);
-        }
+        .badge-connected { background: rgba(0, 200, 83, 0.15); color: var(--success); }
+        .badge-disconnected { background: rgba(255, 82, 82, 0.15); color: var(--danger); }
 
         .toggle-arrow {
             font-size: 0.9em;
@@ -301,7 +282,7 @@
         .card-body { display: none; }
         .card-body.open { display: block; animation: fadeIn 0.3s ease; }
 
-        /* ==================== المدخلات ==================== */
+        /* المدخلات */
         .input-group {
             display: flex;
             gap: 8px;
@@ -365,7 +346,7 @@
             font-weight: 700;
         }
 
-        /* ==================== الأسهم ==================== */
+        /* الأسهم */
         .stock-tags {
             display: flex;
             flex-wrap: wrap;
@@ -425,7 +406,7 @@
             color: white;
         }
 
-        /* ==================== الفحص التلقائي ==================== */
+        /* الفحص التلقائي */
         .scan-controls {
             display: flex;
             gap: 10px;
@@ -446,14 +427,8 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .scan-btn.start {
-            background: linear-gradient(135deg, var(--success), #26a69a);
-        }
-
-        .scan-btn.stop {
-            background: linear-gradient(135deg, var(--danger), #e53935);
-            animation: pulseRed 2s infinite;
-        }
+        .scan-btn.start { background: linear-gradient(135deg, var(--success), #26a69a); }
+        .scan-btn.stop { background: linear-gradient(135deg, var(--danger), #e53935); animation: pulseRed 2s infinite; }
 
         @keyframes pulseRed {
             0%, 100% { box-shadow: 0 4px 12px rgba(255, 82, 82, 0.3); }
@@ -469,21 +444,8 @@
             font-weight: 800;
         }
 
-        .status-running {
-            background: rgba(0, 200, 83, 0.2);
-            color: var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        .status-stopped {
-            background: rgba(158, 158, 158, 0.15);
-            color: #757575;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
+        .status-running { background: rgba(0, 200, 83, 0.2); color: var(--success); animation: pulse 2s infinite; }
+        .status-stopped { background: rgba(158, 158, 158, 0.15); color: #757575; }
 
         .scan-info {
             text-align: center;
@@ -492,7 +454,77 @@
             margin-top: 8px;
         }
 
-        /* ==================== شروط VSA ==================== */
+        /* قائمة الأسعار */
+        .price-check-list {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(74, 144, 226, 0.15);
+        }
+
+        .price-check-title {
+            font-size: 0.8em;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .price-check-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid rgba(74, 144, 226, 0.1);
+            font-size: 0.78em;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .price-check-symbol {
+            font-weight: 800;
+            color: var(--text-primary);
+            min-width: 60px;
+        }
+
+        .price-check-price {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .price-check-change {
+            font-weight: 800;
+            font-size: 0.9em;
+            min-width: 70px;
+            text-align: left;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .price-check-source {
+            font-size: 0.65em;
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 8px;
+            margin-right: 5px;
+        }
+
+        .price-check-source.yahoo { background: rgba(0, 200, 83, 0.15); color: var(--success); }
+        .price-check-source.finnhub { background: rgba(255, 179, 0, 0.15); color: #e65100; }
+
+        .price-positive { color: var(--success); }
+        .price-negative { color: var(--danger); }
+
+        /* شروط VSA */
         .vsa-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -522,7 +554,7 @@
             color: #c62828;
         }
 
-        /* ==================== بطاقة التوصية ==================== */
+        /* بطاقة التوصية */
         .recommendation-card {
             background: var(--card-bg-solid);
             border: 2px solid rgba(255, 255, 255, 0.7);
@@ -533,11 +565,6 @@
             overflow: hidden;
             box-shadow: 0 8px 24px rgba(74, 144, 226, 0.15);
             animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .recommendation-card.golden {
@@ -555,9 +582,7 @@
         .recommendation-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            right: 0;
-            left: 0;
+            top: 0; right: 0; left: 0;
             height: 4px;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
         }
@@ -598,14 +623,8 @@
             50% { box-shadow: 0 0 25px rgba(255, 193, 7, 1); }
         }
 
-        .badge-buy {
-            background: linear-gradient(135deg, var(--success), #26a69a);
-        }
-
-        .badge-locked {
-            background: linear-gradient(135deg, var(--warning), #f57c00);
-            color: #333;
-        }
+        .badge-buy { background: linear-gradient(135deg, var(--success), #26a69a); }
+        .badge-locked { background: linear-gradient(135deg, var(--warning), #f57c00); color: #333; }
 
         .rec-price {
             font-size: 1.6em;
@@ -707,7 +726,7 @@
         .btn-sl { background: var(--danger); }
         .btn-no { background: var(--warning); color: #333; }
 
-        /* ==================== الإحصائيات ==================== */
+        /* الإحصائيات */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -763,7 +782,6 @@
             margin-top: 3px;
         }
 
-        /* الرسم البياني */
         .chart-container {
             padding: 15px;
             background: white;
@@ -779,7 +797,7 @@
             margin-bottom: 12px;
         }
 
-        /* ==================== حالات ==================== */
+        /* حالات */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -821,7 +839,6 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* الإشعار الداخلي */
         .toast {
             position: fixed;
             top: 20px;
@@ -849,15 +866,16 @@
             background: linear-gradient(135deg, var(--success), #26a69a);
         }
 
+        .toast.warning {
+            background: linear-gradient(135deg, var(--warning), #f57c00);
+            color: #333;
+        }
+
         @keyframes slideDown {
             from { opacity: 0; transform: translate(-50%, -30px); }
             to { opacity: 1; transform: translate(-50%, 0); }
         }
 
-        /* إخفاء الأزرار الافتراضية */
-        .hidden { display: none !important; }
-
-        /* شارة القفل */
         .lock-badge {
             position: absolute;
             top: 12px;
@@ -872,7 +890,6 @@
     </style>
 </head>
 <body>
-    <!-- الخلفية المتحركة -->
     <div class="bg-shapes">
         <div class="shape"></div>
         <div class="shape"></div>
@@ -889,9 +906,9 @@
                     <div class="logo-version">V1.0</div>
                 </div>
             </div>
-            <div class="lang-btns">
-                <button class="lang-btn active" onclick="setLanguage('ar')">عربي</button>
-                <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+            <div class="price-status" id="price-status">
+                <span class="status-dot" id="status-dot"></span>
+                <span id="price-status-text">جاري الفحص...</span>
             </div>
         </div>
         
@@ -934,12 +951,14 @@
             </button>
         </div>
         
-        <!-- ==================== تبويب التحليل ==================== -->
+        <!-- تبويب التحليل -->
         <div class="tab-content active" id="tab-analysis">
-            <!-- زر البحث -->
             <button class="btn-primary btn-large" onclick="startManualScan()" id="scan-now-btn">
                 🔍 بدء البحث الآن
             </button>
+            
+            <!-- قائمة الأسعار بعد البحث -->
+            <div id="price-check-container"></div>
             
             <!-- الفحص التلقائي -->
             <div class="card" style="margin-top: 12px;">
@@ -963,16 +982,16 @@
                 </div>
                 <div class="card-body" id="conditions-body">
                     <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
-                        ✅ الشرط 1: تصحيح بحجم منخفض (Recent volume < 60% of avg)
+                        ✅ الشرط 1: تصحيح بحجم منخفض
                     </div>
                     <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
-                        ✅ الشرط 2: حجم ميت عند القاع (Last 2 volumes < 30% of avg)
+                        ✅ الشرط 2: حجم ميت عند القاع
                     </div>
                     <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
-                        ✅ الشرط 3: الحجم يعود (Increasing volumes)
+                        ✅ الشرط 3: الحجم يعود
                     </div>
                     <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
-                        ✅ الشرط 4: السعر يتحول (Close > Open)
+                        ✅ الشرط 4: السعر يتحول
                     </div>
                     <div style="text-align: center; margin-top: 10px; font-size: 0.8em; color: var(--text-secondary);">
                         <strong>3/4</strong> = توصية | <strong>4/4</strong> = إشارة ذهبية 🏆
@@ -1001,7 +1020,7 @@
             </div>
         </div>
         
-        <!-- ==================== تبويب التوصيات ==================== -->
+        <!-- تبويب التوصيات -->
         <div class="tab-content" id="tab-recommendations">
             <div id="recommendations-container">
                 <div class="empty-state">
@@ -1012,7 +1031,7 @@
             </div>
         </div>
         
-        <!-- ==================== تبويب الإحصائيات ==================== -->
+        <!-- تبويب الإحصائيات -->
         <div class="tab-content" id="tab-stats">
             <div class="stats-grid">
                 <div class="stat-card">
@@ -1054,7 +1073,7 @@
             </div>
         </div>
         
-        <!-- ==================== تبويب الإعدادات ==================== -->
+        <!-- تبويب الإعدادات -->
         <div class="tab-content" id="tab-settings">
             <!-- مفتاح Finnhub -->
             <div class="card">
@@ -1110,7 +1129,6 @@
     <script>
         // ==================== المتغيرات ====================
         const APP_VERSION = '1.0';
-        let currentLanguage = 'ar';
         let apiKey = localStorage.getItem('finnhub_api_key') || '';
         let watchlist = JSON.parse(localStorage.getItem('watchlist') || '["AAPL","MSFT","NVDA","AMD","TSLA","META"]');
         let recommendations = JSON.parse(localStorage.getItem('recommendations') || '[]');
@@ -1118,7 +1136,6 @@
         let activeRecommendation = JSON.parse(localStorage.getItem('active_recommendation') || 'null');
         let statsHistory = JSON.parse(localStorage.getItem('stats_history') || '[]');
         
-        // إعدادات الفحص التلقائي
         const AUTO_SCAN_INTERVAL = 5 * 60 * 1000;
         const MAX_CALLS_PER_MINUTE = 55;
         let apiCallsThisMinute = 0;
@@ -1126,8 +1143,8 @@
         let autoScanTimer = null;
         let lastMinuteReset = Date.now();
         let isAutoScanRunning = false;
-        
         let statsChart = null;
+        let priceStatusCheckInterval = null;
 
         // ==================== إدارة API ====================
         function resetApiCallCounter() {
@@ -1147,11 +1164,162 @@
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 return await response.json();
             } catch (error) {
-                console.error('API Error:', error);
                 return null;
             }
         }
 
+        // ==================== Yahoo Finance ====================
+        async function getYahooPrice(symbol) {
+            try {
+                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1m&range=1d`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Yahoo failed');
+                const data = await response.json();
+                
+                const result = data.chart?.result?.[0];
+                if (!result) throw new Error('No data');
+                
+                const meta = result.meta;
+                const price = meta.regularMarketPrice;
+                const previousClose = meta.chartPreviousClose || meta.previousClose;
+                const change = price - previousClose;
+                const changePercent = (change / previousClose) * 100;
+                const timestamp = meta.regularMarketTime * 1000;
+                const delay = (Date.now() - timestamp) / 1000 / 60;
+                
+                return {
+                    symbol,
+                    price,
+                    previousClose,
+                    change,
+                    changePercent,
+                    timestamp,
+                    isRealtime: delay < 1,
+                    delayMinutes: Math.round(delay),
+                    source: 'Yahoo'
+                };
+            } catch (error) {
+                return null;
+            }
+        }
+
+        // ==================== Finnhub ====================
+        async function getFinnhubPrice(symbol) {
+            if (!apiKey) return null;
+            
+            const data = await safeApiCall(
+                `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`
+            );
+            
+            if (!data || !data.c) return null;
+            
+            const timestamp = data.t * 1000;
+            const delay = (Date.now() - timestamp) / 1000 / 60;
+            
+            return {
+                symbol,
+                price: data.c,
+                previousClose: data.pc,
+                change: data.d,
+                changePercent: data.dp,
+                timestamp,
+                isRealtime: delay < 1,
+                delayMinutes: Math.round(delay),
+                source: 'Finnhub'
+            };
+        }
+
+        // ==================== الأسعار المزدوجة ====================
+        async function getPrice(symbol) {
+            // جرب Yahoo أولاً (لحظي)
+            const yahooPrice = await getYahooPrice(symbol);
+            if (yahooPrice && yahooPrice.price) {
+                return yahooPrice;
+            }
+            
+            // Finnhub كاحتياطي
+            const finnhubPrice = await getFinnhubPrice(symbol);
+            if (finnhubPrice && finnhubPrice.price) {
+                return finnhubPrice;
+            }
+            
+            return null;
+        }
+
+        // ==================== حالة الأسعار ====================
+        async function checkPriceStatus() {
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('price-status-text');
+            
+            if (!apiKey && watchlist.length === 0) {
+                dot.className = 'status-dot offline';
+                text.textContent = '⚠️ غير مهيأ';
+                return;
+            }
+            
+            if (watchlist.length === 0) {
+                dot.className = 'status-dot offline';
+                text.textContent = '⚠️ لا أسهم';
+                return;
+            }
+            
+            const testSymbol = watchlist[0];
+            const price = await getPrice(testSymbol);
+            
+            if (!price) {
+                dot.className = 'status-dot offline';
+                text.textContent = '❌ تعذر الاتصال';
+                return;
+            }
+            
+            if (price.isRealtime) {
+                dot.className = 'status-dot realtime';
+                text.textContent = `🟢 لحظي (${price.source})`;
+            } else if (price.delayMinutes < 20) {
+                dot.className = 'status-dot delayed';
+                text.textContent = `🟡 متأخر ${price.delayMinutes}د`;
+            } else {
+                dot.className = 'status-dot delayed';
+                text.textContent = '🟡 بيانات قديمة';
+            }
+        }
+
+        // ==================== عرض الأسعار عند البحث ====================
+        function displayPriceCheck(prices) {
+            const container = document.getElementById('price-check-container');
+            
+            if (!prices || prices.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            const html = `
+                <div class="price-check-list">
+                    <div class="price-check-title">📊 الأسعار الحالية (للتأكيد)</div>
+                    ${prices.map(p => {
+                        const changeClass = p.changePercent >= 0 ? 'price-positive' : 'price-negative';
+                        const changeSign = p.changePercent >= 0 ? '+' : '';
+                        const sourceClass = p.source === 'Yahoo' ? 'yahoo' : 'finnhub';
+                        return `
+                            <div class="price-check-item">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span class="price-check-symbol">${p.symbol}</span>
+                                    <span class="price-check-source ${sourceClass}">${p.source}</span>
+                                </div>
+                                <div class="price-check-price">$${p.price.toFixed(2)}</div>
+                                <div class="price-check-change ${changeClass}">
+                                    ${changeSign}${p.changePercent.toFixed(2)}%
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        // ==================== حفظ البيانات ====================
         function saveApiKey() {
             const input = document.getElementById('api-key-input');
             const key = input.value.trim();
@@ -1160,6 +1328,7 @@
                 localStorage.setItem('finnhub_api_key', key);
                 updateApiBadge();
                 showToast('✅ تم حفظ المفتاح بنجاح!', 'success');
+                checkPriceStatus();
             }
         }
 
@@ -1250,6 +1419,7 @@
                 localStorage.setItem('watchlist', JSON.stringify(watchlist));
                 displayWatchlist();
                 input.value = '';
+                checkPriceStatus();
             }
         }
 
@@ -1258,6 +1428,7 @@
                 watchlist.push(symbol);
                 localStorage.setItem('watchlist', JSON.stringify(watchlist));
                 displayWatchlist();
+                checkPriceStatus();
             }
         }
 
@@ -1265,6 +1436,7 @@
             watchlist = watchlist.filter(s => s !== symbol);
             localStorage.setItem('watchlist', JSON.stringify(watchlist));
             displayWatchlist();
+            checkPriceStatus();
         }
 
         // ==================== تحليل VSA ====================
@@ -1278,7 +1450,6 @@
             if (volumes.length < 20) return null;
             
             const avgVolume = volumes.slice(-20).reduce((a, b) => a + b, 0) / 20;
-            
             const recent5Volume = volumes.slice(-5).reduce((a, b) => a + b, 0) / 5;
             const lowVolumePullback = recent5Volume < avgVolume * 0.6;
             
@@ -1328,14 +1499,17 @@
         }
 
         async function analyzeSingleStock(symbol) {
-            if (!apiKey) return null;
+            const quote = await safeApiCall(
+                apiKey ? `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}` : null
+            );
             
-            const quote = await safeApiCall(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
             if (!quote || !quote.c) return null;
             
             const now = Math.floor(Date.now() / 1000);
             const from = now - 3600;
-            const candles = await safeApiCall(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=5&from=${from}&to=${now}&token=${apiKey}`);
+            const candles = await safeApiCall(
+                apiKey ? `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=5&from=${from}&to=${now}&token=${apiKey}` : null
+            );
             
             if (!candles || !candles.c || candles.c.length < 20) {
                 return getDemoAnalysis(symbol, quote);
@@ -1393,7 +1567,6 @@
                 return;
             }
             
-            // تحقق من القفل
             if (activeRecommendation) {
                 showToast('🔒 لديك توصية نشطة - سجل نتيجتها أولاً', 'warning');
                 return;
@@ -1403,8 +1576,30 @@
             btn.disabled = true;
             btn.textContent = '🔍 جاري البحث...';
             
-            const newRecommendations = [];
+            // المرحلة 1: عرض الأسعار
+            const priceCheckContainer = document.getElementById('price-check-container');
+            priceCheckContainer.innerHTML = `
+                <div class="price-check-list">
+                    <div class="price-check-title">📊 جلب الأسعار...</div>
+                    <div style="text-align: center; padding: 15px;">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            `;
             
+            // جلب الأسعار الحقيقية لكل سهم
+            const prices = [];
+            for (const symbol of watchlist) {
+                const price = await getPrice(symbol);
+                if (price) {
+                    prices.push(price);
+                    // عرض تدريجي
+                    displayPriceCheck(prices);
+                }
+            }
+            
+            // المرحلة 2: تحليل VSA
+            const newRecommendations = [];
             for (const symbol of watchlist) {
                 try {
                     const analysis = await analyzeSingleStock(symbol);
@@ -1419,8 +1614,8 @@
             btn.disabled = false;
             btn.textContent = '🔍 بدء البحث الآن';
             
+            // إضافة التوصيات
             if (newRecommendations.length > 0) {
-                // دمج مع التوصيات السابقة (بدون تكرار)
                 newRecommendations.forEach(newRec => {
                     if (!recommendations.find(r => r.symbol === newRec.symbol)) {
                         recommendations.push(newRec);
@@ -1430,7 +1625,6 @@
                 localStorage.setItem('recommendations', JSON.stringify(recommendations));
                 displayRecommendations();
                 
-                // تنبيه
                 const hasGolden = newRecommendations.some(r => r.isGolden);
                 showToast(
                     hasGolden ? '🏆 تم العثور على إشارة ذهبية!' : `🎯 تم العثور على ${newRecommendations.length} توصية!`,
@@ -1438,13 +1632,21 @@
                 );
                 playNotificationSound();
                 
-                // الانتقال لتبويب التوصيات
                 setTimeout(() => {
                     switchTab('recommendations', document.querySelectorAll('.tab-btn')[1]);
-                }, 800);
+                }, 1500);
             } else {
-                showToast('لا توجد إشارات VSA حالياً', 'warning');
+                setTimeout(() => {
+                    priceCheckContainer.innerHTML += `
+                        <div style="text-align: center; margin-top: 10px; padding: 10px; background: rgba(255, 179, 0, 0.1); border-radius: 10px; color: #e65100; font-weight: 700; font-size: 0.8em;">
+                            لا توجد إشارات VSA حالياً
+                        </div>
+                    `;
+                }, 500);
             }
+            
+            // تحديث حالة الأسعار
+            checkPriceStatus();
         }
 
         // ==================== عرض التوصيات ====================
@@ -1462,7 +1664,6 @@
                 return;
             }
             
-            // ترتيب: النشطة أولاً، ثم الذهبية، ثم الباقي
             const sorted = [...recommendations].sort((a, b) => {
                 if (a.symbol === activeRecommendation?.symbol) return -1;
                 if (b.symbol === activeRecommendation?.symbol) return 1;
@@ -1546,7 +1747,7 @@
                             </div>
                         ` : `
                             <button class="approve-btn" onclick="approveRecommendation('${rec.symbol}')" ${isLocked ? 'disabled' : ''}>
-                                ${isLocked ? '🔒 مقفول - سجل التوصية النشطة أولاً' : '✅ اعتماد التوصية'}
+                                ${isLocked ? '🔒 مقفول' : '✅ اعتماد التوصية'}
                             </button>
                         `}
                     </div>
@@ -1557,7 +1758,7 @@
         // ==================== اعتماد التوصية ====================
         function approveRecommendation(symbol) {
             if (activeRecommendation) {
-                showToast('🔒 لديك توصية نشطة - سجل نتيجتها أولاً', 'warning');
+                showToast('🔒 لديك توصية نشطة', 'warning');
                 return;
             }
             
@@ -1567,7 +1768,7 @@
             activeRecommendation = rec;
             localStorage.setItem('active_recommendation', JSON.stringify(rec));
             
-            showToast('✅ تم اعتماد التوصية - البحث مقفول الآن', 'success');
+            showToast('✅ تم اعتماد التوصية - البحث مقفول', 'success');
             playNotificationSound();
             displayRecommendations();
         }
@@ -1582,7 +1783,6 @@
             else if (result === 'sl') weeklyStats.sl++;
             else if (result === 'noltp') weeklyStats.noltp++;
             
-            // إضافة للسجل
             statsHistory.push({
                 symbol: activeRecommendation.symbol,
                 result: result,
@@ -1592,24 +1792,16 @@
             localStorage.setItem('weekly_stats', JSON.stringify(weeklyStats));
             localStorage.setItem('stats_history', JSON.stringify(statsHistory));
             
-            // إزالة التوصية النشطة
             activeRecommendation = null;
             localStorage.removeItem('active_recommendation');
             
-            // إزالة من قائمة التوصيات
-            recommendations = recommendations.filter(r => 
-                r.symbol !== (JSON.parse(localStorage.getItem('active_recommendation') || '{}').symbol)
-            );
-            recommendations = recommendations.filter(r => r.symbol !== activeRecommendation?.symbol);
-            
-            // إزالة كل التوصيات القديمة
             recommendations = [];
             localStorage.setItem('recommendations', JSON.stringify([]));
             
             updateStatsDisplay();
             displayRecommendations();
             
-            showToast(`✅ تم تسجيل ${result.toUpperCase()} - البحث مفتوح الآن`, 'success');
+            showToast(`✅ تم تسجيل ${result.toUpperCase()} - البحث مفتوح`, 'success');
         }
 
         function updateStatsDisplay() {
@@ -1642,13 +1834,7 @@
                     labels: ['TP1', 'TP2', 'TP3', 'SL', 'No TP'],
                     datasets: [{
                         label: 'عدد التوصيات',
-                        data: [
-                            weeklyStats.tp1,
-                            weeklyStats.tp2,
-                            weeklyStats.tp3,
-                            weeklyStats.sl,
-                            weeklyStats.noltp
-                        ],
+                        data: [weeklyStats.tp1, weeklyStats.tp2, weeklyStats.tp3, weeklyStats.sl, weeklyStats.noltp],
                         backgroundColor: [
                             'rgba(0, 200, 83, 0.7)',
                             'rgba(0, 200, 83, 0.85)',
@@ -1656,9 +1842,7 @@
                             'rgba(255, 82, 82, 0.8)',
                             'rgba(255, 179, 0, 0.8)'
                         ],
-                        borderColor: [
-                            '#00c853', '#00c853', '#00c853', '#ff5252', '#ffb300'
-                        ],
+                        borderColor: ['#00c853', '#00c853', '#00c853', '#ff5252', '#ffb300'],
                         borderWidth: 2,
                         borderRadius: 8
                     }]
@@ -1666,24 +1850,15 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                color: '#5c6bc0',
-                                font: { weight: 'bold' }
-                            },
+                            ticks: { stepSize: 1, color: '#5c6bc0', font: { weight: 'bold' } },
                             grid: { color: 'rgba(74, 144, 226, 0.1)' }
                         },
                         x: {
-                            ticks: {
-                                color: '#5c6bc0',
-                                font: { weight: 'bold' }
-                            },
+                            ticks: { color: '#5c6bc0', font: { weight: 'bold' } },
                             grid: { display: false }
                         }
                     }
@@ -1743,7 +1918,7 @@
         async function autoScan() {
             if (!apiKey || !isAutoScanRunning) return;
             if (!isMarketOpen()) return;
-            if (activeRecommendation) return; // البحث مقفول
+            if (activeRecommendation) return;
             
             const batchSize = 3;
             const batch = [];
@@ -1782,6 +1957,8 @@
                 );
                 playNotificationSound();
             }
+            
+            checkPriceStatus();
         }
 
         // ==================== الإشعارات ====================
@@ -1817,14 +1994,6 @@
             } catch (e) {}
         }
 
-        // ==================== اللغة ====================
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            updateTimes();
-        }
-
         // ==================== بدء التطبيق ====================
         document.addEventListener('DOMContentLoaded', function() {
             updateTimes();
@@ -1834,6 +2003,10 @@
             updateStatsDisplay();
             displayRecommendations();
             updateScanUI();
+            
+            // فحص حالة الأسعار
+            setTimeout(checkPriceStatus, 1000);
+            priceStatusCheckInterval = setInterval(checkPriceStatus, 60000);
         });
 
         // Service Worker
@@ -1846,7 +2019,6 @@
         }
     </script>
     
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
