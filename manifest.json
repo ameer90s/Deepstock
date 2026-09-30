@@ -1,7 +1,7 @@
 {
-    "name": "StockPro V1.0",
+    "name": "StockPro V2.0",
     "short_name": "StockPro",
-    "description": "برنامج تحليل الأسهم الأمريكية بنظام VSA",
+    "description": "برنامج تحليل الأسهم الأمريكية بنظام Market Structure",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

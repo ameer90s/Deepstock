@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPro V1.1 - نظام التداول الذكي</title>
+    <title>StockPro V2.0 - Market Structure</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4A90E2">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="StockPro V1.1">
+    <meta name="apple-mobile-web-app-title" content="StockPro V2.0">
     
     <style>
         :root {
@@ -505,14 +505,15 @@
         .price-positive { color: var(--success); }
         .price-negative { color: var(--danger); }
 
-        .vsa-grid {
+        /* شروط Market Structure */
+        .ms-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 6px;
             margin: 10px 0;
         }
 
-        .vsa-item {
+        .ms-item {
             padding: 8px;
             border-radius: 10px;
             font-size: 0.7em;
@@ -522,16 +523,45 @@
             font-weight: 700;
         }
 
-        .vsa-pass {
+        .ms-pass {
             background: rgba(0, 200, 83, 0.12);
             border: 1px solid rgba(0, 200, 83, 0.4);
             color: #00802b;
         }
 
-        .vsa-fail {
+        .ms-fail {
             background: rgba(255, 82, 82, 0.08);
             border: 1px solid rgba(255, 82, 82, 0.25);
             color: #c62828;
+        }
+
+        .signal-type-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+        .signal-bos {
+            background: rgba(74, 144, 226, 0.2);
+            color: var(--primary-dark);
+        }
+
+        .signal-choch {
+            background: rgba(255, 179, 0, 0.2);
+            color: #e65100;
+        }
+
+        .signal-sweep {
+            background: rgba(123, 104, 238, 0.2);
+            color: #4527a0;
+        }
+
+        .signal-ob {
+            background: rgba(0, 200, 83, 0.2);
+            color: #00802b;
         }
 
         .recommendation-card {
@@ -558,6 +588,11 @@
             background: linear-gradient(135deg, #FFF3E0 0%, #FFFFFF 100%);
         }
 
+        .recommendation-card.sell-card {
+            border-color: var(--danger);
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFFFFF 100%);
+        }
+
         .recommendation-card::before {
             content: '';
             position: absolute;
@@ -568,6 +603,10 @@
 
         .recommendation-card.golden::before {
             background: linear-gradient(90deg, var(--gold), #ff9800);
+        }
+
+        .recommendation-card.sell-card::before {
+            background: linear-gradient(90deg, var(--danger), #e53935);
         }
 
         .rec-header {
@@ -603,6 +642,7 @@
         }
 
         .badge-buy { background: linear-gradient(135deg, var(--success), #26a69a); }
+        .badge-sell { background: linear-gradient(135deg, var(--danger), #e53935); }
         .badge-locked { background: linear-gradient(135deg, var(--warning), #f57c00); color: #333; }
 
         .rec-price {
@@ -612,7 +652,7 @@
             margin: 6px 0;
         }
 
-        .rec-vsa-score {
+        .rec-ms-score {
             text-align: center;
             padding: 8px;
             background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(123, 104, 238, 0.1));
@@ -845,6 +885,10 @@
             color: #333;
         }
 
+        .toast.sell {
+            background: linear-gradient(135deg, var(--danger), #e53935);
+        }
+
         @keyframes slideDown {
             from { opacity: 0; transform: translate(-50%, -30px); }
             to { opacity: 1; transform: translate(-50%, 0); }
@@ -872,6 +916,15 @@
             color: #e65100;
             font-weight: 600;
         }
+
+        .strategy-info {
+            padding: 10px;
+            background: rgba(74, 144, 226, 0.08);
+            border-radius: 10px;
+            font-size: 0.72em;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -887,7 +940,7 @@
                 <div class="logo-icon">📈</div>
                 <div class="logo-info">
                     <div class="logo-name">StockPro</div>
-                    <div class="logo-version">V1.1</div>
+                    <div class="logo-version">V2.0 MS</div>
                 </div>
             </div>
             <div class="price-status" id="price-status">
@@ -956,44 +1009,45 @@
             
             <div class="card">
                 <div class="card-header" onclick="toggleCard('conditions-body', 'conditions-arrow')">
-                    <div class="card-title">📋 شروط البحث (VSA 4/4)</div>
+                    <div class="card-title">📋 شروط Market Structure</div>
                     <div class="toggle-arrow" id="conditions-arrow">▼</div>
                 </div>
                 <div class="card-body" id="conditions-body">
-                    <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
-                        ✅ الشرط 1: تصحيح بحجم منخفض
-                    </div>
-                    <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
-                        ✅ الشرط 2: حجم ميت عند القاع
-                    </div>
-                    <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
-                        ✅ الشرط 3: الحجم يعود
-                    </div>
-                    <div class="vsa-item vsa-pass" style="margin-bottom: 6px;">
-                        ✅ الشرط 4: السعر يتحول
-                    </div>
-                    <div style="text-align: center; margin-top: 10px; padding: 10px; background: rgba(0, 200, 83, 0.1); border-radius: 10px;">
-                        <div style="font-size: 0.85em; font-weight: 800; color: #00802b;">
-                            ⚡ يجب تحقق <strong>4/4</strong> فقط
-                        </div>
-                        <div style="font-size: 0.7em; color: #666; margin-top: 5px;">
-                            + فلاتر إضافية (الرينج، الفجوة، السوق)
-                        </div>
+                    <div class="strategy-info">
+                        <strong>🎯 الأنواع الأربعة للإشارات:</strong>
+                        <br>
+                        <br>
+                        <strong>1. BOS (Break of Structure):</strong>
+                        <br>
+                        اختراق قمة أو قاع = استمرار الاتجاه
+                        <br>
+                        <br>
+                        <strong>2. CHoCH (Change of Character):</strong>
+                        <br>
+                        تغير السلوك = انعكاس محتمل
+                        <br>
+                        <br>
+                        <strong>3. Liquidity Sweep:</strong>
+                        <br>
+                        صيد السيولة = دخول بعد الفخ
+                        <br>
+                        <br>
+                        <strong>4. Order Block:</strong>
+                        <br>
+                        منطقة أوامر = دخول عند الدعم/المقاومة
                     </div>
                 </div>
             </div>
             
             <div class="card">
                 <div class="card-header" onclick="toggleCard('filters-body', 'filters-arrow')">
-                    <div class="card-title">🚫 الفلاتر الإضافية</div>
+                    <div class="card-title">🚫 الفلاتر</div>
                     <div class="toggle-arrow" id="filters-arrow">▼</div>
                 </div>
                 <div class="card-body" id="filters-body">
-                    <div class="filter-reason">الرينج اليومي: 1% - 6%</div>
-                    <div class="filter-reason">القرب من القمة: > 0.5%</div>
-                    <div class="filter-reason">الفجوة السعرية: < 3%</div>
-                    <div class="filter-reason">اتجاه السوق: غير هابط</div>
-                    <div class="filter-reason">المخاطرة: < 2%</div>
+                    <div class="filter-reason">الرينج اليومي: 0.5% - 8%</div>
+                    <div class="filter-reason">قوة الاتجاه: ATR</div>
+                    <div class="filter-reason">اتجاه السوق العام</div>
                 </div>
             </div>
             
@@ -1105,9 +1159,9 @@
             <div class="card">
                 <div style="text-align: center; padding: 10px;">
                     <div style="font-size: 1.5em; margin-bottom: 8px;">📈</div>
-                    <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">StockPro V1.1</div>
+                    <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">StockPro V2.0</div>
                     <div style="font-size: 0.75em; color: var(--text-secondary);">
-                        نظام VSA محسّن - جودة عالية
+                        Market Structure Edition
                     </div>
                     <div style="font-size: 0.7em; color: var(--text-secondary); margin-top: 8px;">
                         © 2026
@@ -1119,7 +1173,7 @@
 
     <script>
         // ==================== المتغيرات ====================
-        const APP_VERSION = '1.1';
+        const APP_VERSION = '2.0';
         let apiKey = localStorage.getItem('finnhub_api_key') || '';
         let watchlist = JSON.parse(localStorage.getItem('watchlist') || '["AAPL","MSFT","NVDA","AMD","TSLA","META"]');
         let recommendations = JSON.parse(localStorage.getItem('recommendations') || '[]');
@@ -1441,178 +1495,257 @@
 
         // ==================== تحليل السوق العام ====================
         async function analyzeMarketContext() {
-            let spyChange = 0, qqqChange = 0, vixChange = 0;
+            let spyChange = 0, qqqChange = 0;
             
             if (apiKey) {
                 try {
                     const spy = await safeApiCall(`https://finnhub.io/api/v1/quote?symbol=SPY&token=${apiKey}`);
-                    if (spy && spy.dp !== undefined) {
-                        spyChange = spy.dp;
-                        document.getElementById('spy-value').textContent = (spyChange > 0 ? '+' : '') + spyChange.toFixed(2) + '%';
-                        document.getElementById('spy-value').className = 'indicator-value ' + (spyChange > 0 ? 'indicator-positive' : 'indicator-negative');
-                    }
+                    if (spy && spy.dp !== undefined) spyChange = spy.dp;
                     
                     const qqq = await safeApiCall(`https://finnhub.io/api/v1/quote?symbol=QQQ&token=${apiKey}`);
-                    if (qqq && qqq.dp !== undefined) {
-                        qqqChange = qqq.dp;
-                        document.getElementById('qqq-value').textContent = (qqqChange > 0 ? '+' : '') + qqqChange.toFixed(2) + '%';
-                        document.getElementById('qqq-value').className = 'indicator-value ' + (qqqChange > 0 ? 'indicator-positive' : 'indicator-negative');
-                    }
-                    
-                    const vix = await safeApiCall(`https://finnhub.io/api/v1/quote?symbol=VIX&token=${apiKey}`);
-                    if (vix && vix.dp !== undefined) {
-                        vixChange = vix.dp;
-                        document.getElementById('vix-value').textContent = (vixChange > 0 ? '+' : '') + vixChange.toFixed(2) + '%';
-                        document.getElementById('vix-value').className = 'indicator-value ' + (vixChange > 0 ? 'indicator-negative' : 'indicator-positive');
-                    }
+                    if (qqq && qqq.dp !== undefined) qqqChange = qqq.dp;
                 } catch (error) {
-                    console.error('Market analysis error:', error);
+                    console.error('Market error:', error);
                 }
             }
             
             let bias = 'neutral';
             let strength = 50;
-            let recommendation = '';
             
-            const spyBearish = spyChange < -0.3;
-            const qqqBearish = qqqChange < -0.3;
-            const bothBearish = spyBearish && qqqBearish;
-            const vixHigh = vixChange > 5;
+            const bothBearish = spyChange < -0.3 && qqqChange < -0.3;
+            const bothBullish = spyChange > 0.3 && qqqChange > 0.3;
             
-            if (vixHigh) {
-                bias = 'fear';
-                strength = 10;
-                recommendation = '⚠️ خوف مرتفع - تجنب التداول';
-            } else if (bothBearish) {
+            if (bothBearish) {
                 bias = 'bearish';
                 strength = 20;
-                recommendation = '❌ سوق هابط - تجنب الشراء';
-            } else if (spyChange > 0.3 && qqqChange > 0.3) {
+            } else if (bothBullish) {
                 bias = 'bullish';
                 strength = 80;
-                recommendation = '✅ سوق صاعد - مناسب للشراء';
-            } else if (spyChange > 0 || qqqChange > 0) {
-                bias = 'mixed';
-                strength = 50;
-                recommendation = '⚪ سوق مختلط - تداول بحذر';
             } else {
                 bias = 'neutral';
-                strength = 40;
-                recommendation = '⚪ سوق محايد - انتظر';
+                strength = 50;
             }
             
-            marketContext = { bias, strength, recommendation, spyChange, qqqChange, vixChange, lastUpdate: Date.now() };
-            
-            const recEl = document.getElementById('market-recommendation');
-            if (recEl) recEl.textContent = recommendation;
-            
+            marketContext = { bias, strength, lastUpdate: Date.now() };
             return marketContext;
         }
 
-        // ==================== تحليل VSA المحسّن ====================
-        function analyzeVSA(symbol, quote, candles) {
-            const volumes = candles.v || [];
+        // ==================== Market Structure Analysis ====================
+        function analyzeMarketStructure(symbol, quote, candles) {
             const closes = candles.c || [];
-            const opens = candles.o || [];
-            const lows = candles.l || [];
             const highs = candles.h || [];
+            const lows = candles.l || [];
+            const opens = candles.o || [];
+            const volumes = candles.v || [];
             
-            if (volumes.length < 20) return null;
+            if (closes.length < 20) return null;
             
-            // ========== فلتر 1: الرينج اليومي ==========
+            const currentPrice = quote.c;
+            
+            // ========== فلتر الرينج اليومي ==========
             const dayRange = ((quote.h - quote.l) / quote.l) * 100;
-            const distanceFromHigh = ((quote.h - quote.c) / quote.h) * 100;
-            const distanceFromLow = ((quote.c - quote.l) / quote.l) * 100;
-            
-            if (dayRange < 1) {
+            if (dayRange < 0.5) {
                 return { symbol, isSignal: false, reason: `رينج ضعيف (${dayRange.toFixed(2)}%)` };
             }
-            
-            if (dayRange > 6) {
+            if (dayRange > 8) {
                 return { symbol, isSignal: false, reason: `تحرك كثير (${dayRange.toFixed(2)}%)` };
             }
             
-            if (distanceFromHigh < 0.5) {
-                return { symbol, isSignal: false, reason: `قريب من القمة (${distanceFromHigh.toFixed(2)}%)` };
+            // ========== كشف القمم والقيعان (Swing Points) ==========
+            const swingHighs = [];
+            const swingLows = [];
+            const lookback = 3;
+            
+            for (let i = lookback; i < highs.length - lookback; i++) {
+                let isSwingHigh = true;
+                let isSwingLow = true;
+                
+                for (let j = 1; j <= lookback; j++) {
+                    if (highs[i] <= highs[i - j] || highs[i] <= highs[i + j]) isSwingHigh = false;
+                    if (lows[i] >= lows[i - j] || lows[i] >= lows[i + j]) isSwingLow = false;
+                }
+                
+                if (isSwingHigh) swingHighs.push({ index: i, price: highs[i] });
+                if (isSwingLow) swingLows.push({ index: i, price: lows[i] });
             }
             
-            // ========== فلتر 2: الفجوة السعرية ==========
-            const gap = ((quote.o - quote.pc) / quote.pc) * 100;
-            if (gap > 3) {
-                return { symbol, isSignal: false, reason: `فجوة صعودية (${gap.toFixed(2)}%)` };
+            if (swingHighs.length < 2 || swingLows.length < 2) {
+                return { symbol, isSignal: false, reason: 'بيانات غير كافية' };
             }
             
-            // ========== فلتر 3: اتجاه السوق ==========
-            if (marketContext && marketContext.bias === 'bearish') {
-                return { symbol, isSignal: false, reason: 'السوق هابط' };
-            }
+            // ========== تحديد الاتجاه ==========
+            const last2Highs = swingHighs.slice(-2);
+            const last2Lows = swingLows.slice(-2);
             
-            if (marketContext && marketContext.bias === 'fear') {
-                return { symbol, isSignal: false, reason: 'خوف مرتفع' };
-            }
+            const higherHighs = last2Highs[1].price > last2Highs[0].price;
+            const higherLows = last2Lows[1].price > last2Lows[0].price;
+            const lowerHighs = last2Highs[1].price < last2Highs[0].price;
+            const lowerLows = last2Lows[1].price < last2Lows[0].price;
             
-            // ========== شروط VSA ==========
-            const avgVolume = volumes.slice(-20).reduce((a, b) => a + b, 0) / 20;
+            let trend = 'range';
+            if (higherHighs && higherLows) trend = 'uptrend';
+            else if (lowerHighs && lowerLows) trend = 'downtrend';
             
-            const recent5Volume = volumes.slice(-5).reduce((a, b) => a + b, 0) / 5;
-            const lowVolumePullback = recent5Volume < avgVolume * 0.6;
-            
-            const last2Volumes = volumes.slice(-2);
-            const deadVolumeAtBottom = last2Volumes.every(v => v < avgVolume * 0.3);
-            
-            const last3Volumes = volumes.slice(-3);
-            const volumeReturning = last3Volumes[2] > last3Volumes[1] && last3Volumes[1] > last3Volumes[0];
-            
+            // ========== كشف BOS (Break of Structure) ==========
             const lastClose = closes[closes.length - 1];
-            const lastOpen = opens[opens.length - 1];
-            const lastLow = lows[lows.length - 1];
-            const priceTurning = lastClose > lastOpen && lastClose > lastLow * 1.002;
+            const lastSwingHigh = last2Highs[1].price;
+            const lastSwingLow = last2Lows[1].price;
             
-            const conditions = { lowVolumePullback, deadVolumeAtBottom, volumeReturning, priceTurning };
-            const passedCount = Object.values(conditions).filter(v => v).length;
+            const bullishBOS = lastClose > lastSwingHigh;
+            const bearishBOS = lastClose < lastSwingLow;
             
-            // ✅ 4/4 فقط
-            const isSignal = passedCount === 4;
-            const isGolden = passedCount === 4;
+            // ========== كشف CHoCH (Change of Character) ==========
+            // CHoCH = كسر آخر قمة في اتجاه هابط (انعكاس صعودي)
+            // أو كسر آخر قاع في اتجاه صاعد (انعكاس هبوطي)
+            const bullishCHoCH = trend === 'downtrend' && lastClose > lastSwingHigh;
+            const bearishCHoCH = trend === 'uptrend' && lastClose < lastSwingLow;
             
-            if (!isSignal) {
-                return { symbol, isSignal: false, reason: `${passedCount}/4 شروط` };
+            // ========== كشف Liquidity Sweep ==========
+            // اختراق وهمي لقاع/قمة ثم ارتداد سريع
+            const recentCandle = {
+                high: highs[highs.length - 1],
+                low: lows[lows.length - 1],
+                close: closes[closes.length - 1],
+                open: opens[opens.length - 1]
+            };
+            
+            const prevLow = Math.min(...lows.slice(-10, -1));
+            const prevHigh = Math.max(...highs.slice(-10, -1));
+            
+            const bullishSweep = recentCandle.low < prevLow && recentCandle.close > prevLow;
+            const bearishSweep = recentCandle.high > prevHigh && recentCandle.close < prevHigh;
+            
+            // ========== كشف Order Block ==========
+            // آخر شمعة عكسية قبل حركة قوية
+            let bullishOB = false;
+            let bearishOB = false;
+            
+            if (closes.length >= 3) {
+                const c1 = { open: opens[opens.length - 3], close: closes[closes.length - 3], low: lows[lows.length - 3] };
+                const c2 = { open: opens[opens.length - 2], close: closes[closes.length - 2] };
+                const c3 = { open: opens[opens.length - 1], close: closes[closes.length - 1] };
+                
+                // Bullish OB: شمعة حمراء ثم شمعتان خضراوان قويتان
+                if (c1.close < c1.open && c2.close > c2.open && c3.close > c3.open) {
+                    bullishOB = currentPrice < c1.open * 1.01;
+                }
+                
+                // Bearish OB: شمعة خضراء ثم شمعتان حمراوان قويتان
+                if (c1.close > c1.open && c2.close < c2.open && c3.close < c3.open) {
+                    bearishOB = currentPrice > c1.open * 0.99;
+                }
+            }
+            
+            // ========== تجميع النقاط ==========
+            const buySignals = {
+                bullishBOS,
+                bullishCHoCH,
+                bullishSweep,
+                bullishOB
+            };
+            
+            const sellSignals = {
+                bearishBOS,
+                bearishCHoCH,
+                bearishSweep,
+                bearishOB
+            };
+            
+            const buyCount = Object.values(buySignals).filter(v => v).length;
+            const sellCount = Object.values(sellSignals).filter(v => v).length;
+            
+            // ========== القرار ==========
+            let isBuySignal = false;
+            let isSellSignal = false;
+            let signalType = '';
+            
+            // في اتجاه صاعد: نبحث عن BOS أو Sweep أو OB
+            if (trend === 'uptrend' && (bullishBOS || bullishSweep || bullishOB) && buyCount >= 1) {
+                isBuySignal = true;
+                signalType = bullishBOS ? 'BOS' : bullishSweep ? 'Liquidity Sweep' : 'Order Block';
+            }
+            
+            // في اتجاه هابط: نبحث عن BOS أو Sweep أو OB
+            if (trend === 'downtrend' && (bearishBOS || bearishSweep || bearishOB) && sellCount >= 1) {
+                isSellSignal = true;
+                signalType = bearishBOS ? 'BOS' : bearishSweep ? 'Liquidity Sweep' : 'Order Block';
+            }
+            
+            // CHoCH = انعكاس قوي
+            if (bullishCHoCH) {
+                isBuySignal = true;
+                signalType = 'CHoCH (انعكاس صعودي)';
+            }
+            if (bearishCHoCH) {
+                isSellSignal = true;
+                signalType = 'CHoCH (انعكاس هبوطي)';
+            }
+            
+            // فلتر السوق
+            if (marketContext.bias === 'bearish' && isBuySignal) {
+                return { symbol, isSignal: false, reason: 'السوق هابط - لا شراء' };
+            }
+            if (marketContext.bias === 'bullish' && isSellSignal) {
+                return { symbol, isSignal: false, reason: 'السوق صاعد - لا بيع' };
+            }
+            
+            if (!isBuySignal && !isSellSignal) {
+                return { 
+                    symbol, 
+                    isSignal: false, 
+                    reason: `لا إشارة (اتجاه: ${trend === 'uptrend' ? 'صاعد' : trend === 'downtrend' ? 'هابط' : 'عرضي'})` 
+                };
             }
             
             // ========== حساب المستويات ==========
-            const recentLow = Math.min(...lows.slice(-5));
             const atr = (Math.max(...highs.slice(-14)) - Math.min(...lows.slice(-14))) / 14;
-            const currentPrice = quote.c;
-            const stopLoss = recentLow - (atr * 0.5);
-            const risk = currentPrice - stopLoss;
+            let stopLoss, tp1, tp2, tp3, entry;
             
-            const riskPercent = (risk / currentPrice) * 100;
-            if (riskPercent > 2) {
+            if (isBuySignal) {
+                entry = currentPrice;
+                stopLoss = lastSwingLow - (atr * 0.3);
+                const risk = entry - stopLoss;
+                tp1 = entry + (risk * 1);
+                tp2 = entry + (risk * 2);
+                tp3 = entry + (risk * 3);
+            } else {
+                entry = currentPrice;
+                stopLoss = lastSwingHigh + (atr * 0.3);
+                const risk = stopLoss - entry;
+                tp1 = entry - (risk * 1);
+                tp2 = entry - (risk * 2);
+                tp3 = entry - (risk * 3);
+            }
+            
+            const riskPercent = Math.abs(entry - stopLoss) / entry * 100;
+            if (riskPercent > 3) {
                 return { symbol, isSignal: false, reason: `مخاطرة كبيرة (${riskPercent.toFixed(2)}%)` };
             }
             
-            let confidence = 85 + (dayRange > 2 ? 10 : 0);
-            if (confidence > 95) confidence = 95;
-            
             return {
                 symbol,
-                conditions,
-                passedCount,
-                confidence,
-                isSignal,
-                isGolden,
+                isSignal: true,
+                isGolden: signalType.includes('CHoCH'),
+                isBuy: isBuySignal,
+                isSell: isSellSignal,
+                signalType,
+                trend,
+                conditions: isBuySignal ? buySignals : sellSignals,
+                buySignals,
+                sellSignals,
+                buyCount,
+                sellCount,
                 currentPrice,
                 change: quote.d || 0,
                 changePercent: quote.dp || 0,
-                entry: currentPrice,
+                entry,
                 stopLoss,
-                tp1: currentPrice + (risk * 1),
-                tp2: currentPrice + (risk * 2),
-                tp3: currentPrice + (risk * 3),
-                volumeRatio: (volumes[volumes.length - 1] / avgVolume).toFixed(2),
-                dayRange: dayRange.toFixed(2),
-                distanceFromHigh: distanceFromHigh.toFixed(2),
+                tp1,
+                tp2,
+                tp3,
                 riskPercent: riskPercent.toFixed(2),
+                dayRange: dayRange.toFixed(2),
+                confidence: signalType.includes('CHoCH') ? 90 : 75,
                 timestamp: new Date().toISOString()
             };
         }
@@ -1625,61 +1758,16 @@
             if (!quote || !quote.c) return null;
             
             const now = Math.floor(Date.now() / 1000);
-            const from = now - 3600;
+            const from = now - (4 * 3600); // 4 ساعات = 48 شمعة (5 دقائق)
             const candles = await safeApiCall(
                 apiKey ? `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=5&from=${from}&to=${now}&token=${apiKey}` : null
             );
             
             if (!candles || !candles.c || candles.c.length < 20) {
-                return getDemoAnalysis(symbol, quote);
+                return { symbol, isSignal: false, reason: 'بيانات غير كافية' };
             }
             
-            return analyzeVSA(symbol, quote, candles);
-        }
-
-        function getDemoAnalysis(symbol, quote) {
-            const currentPrice = quote.c || 100;
-            
-            const conditions = {
-                lowVolumePullback: Math.random() > 0.5,
-                deadVolumeAtBottom: Math.random() > 0.6,
-                volumeReturning: Math.random() > 0.5,
-                priceTurning: quote.dp > 0
-            };
-            
-            const passedCount = Object.values(conditions).filter(v => v).length;
-            const isSignal = passedCount === 4;
-            
-            if (!isSignal) {
-                return { symbol, isSignal: false, reason: `${passedCount}/4 شروط` };
-            }
-            
-            const recentLow = currentPrice * 0.98;
-            const atr = currentPrice * 0.01;
-            const stopLoss = recentLow - (atr * 0.5);
-            const risk = currentPrice - stopLoss;
-            
-            return {
-                symbol,
-                conditions,
-                passedCount,
-                confidence: 90,
-                isSignal,
-                isGolden: true,
-                currentPrice,
-                change: quote.d || 0,
-                changePercent: quote.dp || 0,
-                entry: currentPrice,
-                stopLoss,
-                tp1: currentPrice + (risk * 1),
-                tp2: currentPrice + (risk * 2),
-                tp3: currentPrice + (risk * 3),
-                volumeRatio: '1.5',
-                dayRange: '2.5',
-                distanceFromHigh: '1.5',
-                riskPercent: '1.5',
-                timestamp: new Date().toISOString()
-            };
+            return analyzeMarketStructure(symbol, quote, candles);
         }
 
         // ==================== الفحص اليدوي ====================
@@ -1698,7 +1786,6 @@
             btn.disabled = true;
             btn.textContent = '🔍 جاري البحث...';
             
-            // تحليل السوق أولاً
             await analyzeMarketContext();
             
             const priceCheckContainer = document.getElementById('price-check-container');
@@ -1719,18 +1806,12 @@
             }
             
             if (prices.length === 0) {
-                priceCheckContainer.innerHTML = `
-                    <div class="price-check-list">
-                        <div class="price-check-title">❌ تعذر جلب الأسعار</div>
-                    </div>
-                `;
                 btn.disabled = false;
                 btn.textContent = '🔍 بدء البحث الآن';
                 showToast('❌ تعذر جلب الأسعار', 'warning');
                 return;
             }
             
-            // تحليل VSA لكل سهم
             const newRecommendations = [];
             const filteredOut = [];
             
@@ -1760,15 +1841,17 @@
                 localStorage.setItem('recommendations', JSON.stringify(recommendations));
                 displayRecommendations();
                 
-                showToast(`🏆 ${newRecommendations.length} توصية ذهبية!`, 'golden');
+                const buyCount = newRecommendations.filter(r => r.isBuy).length;
+                const sellCount = newRecommendations.filter(r => r.isSell).length;
+                
+                showToast(`🎯 ${newRecommendations.length} إشارة (${buyCount} شراء، ${sellCount} بيع)`, 'success');
                 playNotificationSound();
                 
                 setTimeout(() => {
                     switchTab('recommendations', document.querySelectorAll('.tab-btn')[1]);
                 }, 1500);
             } else {
-                // عرض أسباب الرفض
-                let reasonHTML = '<div style="text-align: center; margin-top: 10px; padding: 10px; background: rgba(255, 179, 0, 0.1); border-radius: 10px; color: #e65100; font-weight: 700; font-size: 0.8em;">لا توجد إشارات 4/4 حالياً</div>';
+                let reasonHTML = '<div style="text-align: center; margin-top: 10px; padding: 10px; background: rgba(255, 179, 0, 0.1); border-radius: 10px; color: #e65100; font-weight: 700; font-size: 0.8em;">لا توجد إشارات Market Structure حالياً</div>';
                 
                 if (filteredOut.length > 0) {
                     reasonHTML += '<div style="margin-top: 10px;"><div style="font-size: 0.75em; font-weight: 800; color: var(--text-primary); margin-bottom: 5px;">أسباب الرفض:</div>';
@@ -1810,13 +1893,29 @@
             container.innerHTML = sorted.map(rec => {
                 const isActive = activeRecommendation?.symbol === rec.symbol;
                 const isLocked = activeRecommendation && !isActive;
-                const cardClass = rec.isGolden ? 'golden' : '';
-                const lockedClass = isLocked ? 'locked' : '';
-                const badgeClass = rec.isGolden ? 'badge-golden' : 'badge-buy';
-                const badgeText = rec.isGolden ? '🏆 إشارة ذهبية' : '✅ شراء VSA';
+                
+                let cardClass = '';
+                let badgeClass = 'badge-buy';
+                let badgeText = '🟢 شراء';
+                
+                if (rec.isSell) {
+                    cardClass = 'sell-card';
+                    badgeClass = 'badge-sell';
+                    badgeText = '🔴 بيع';
+                } else if (rec.isGolden) {
+                    cardClass = 'golden';
+                    badgeClass = 'badge-golden';
+                    badgeText = '🏆 انعكاس';
+                }
+                
+                if (isLocked) cardClass += ' locked';
+                
+                const signalClass = rec.signalType?.includes('BOS') ? 'signal-bos' :
+                                    rec.signalType?.includes('CHoCH') ? 'signal-choch' :
+                                    rec.signalType?.includes('Sweep') ? 'signal-sweep' : 'signal-ob';
                 
                 return `
-                    <div class="recommendation-card ${cardClass} ${lockedClass}">
+                    <div class="recommendation-card ${cardClass}">
                         ${isLocked ? '<div class="lock-badge">🔒 مقفول</div>' : ''}
                         
                         <div class="rec-header">
@@ -1828,24 +1927,43 @@
                         
                         <div class="rec-price">$${rec.currentPrice.toFixed(2)}</div>
                         
-                        <div class="rec-vsa-score">
-                            نقاط VSA: <strong>${rec.passedCount}/4</strong> 🏆
-                            | الحجم: ${rec.volumeRatio}x
+                        <div style="text-align: center; margin: 8px 0;">
+                            <span class="signal-type-badge ${signalClass}">${rec.signalType || 'MS Signal'}</span>
                         </div>
                         
-                        <div class="vsa-grid">
-                            <div class="vsa-item ${rec.conditions.lowVolumePullback ? 'vsa-pass' : 'vsa-fail'}">
-                                ${rec.conditions.lowVolumePullback ? '✅' : '❌'} تصحيح بحجم منخفض
-                            </div>
-                            <div class="vsa-item ${rec.conditions.deadVolumeAtBottom ? 'vsa-pass' : 'vsa-fail'}">
-                                ${rec.conditions.deadVolumeAtBottom ? '✅' : '❌'} حجم ميت عند القاع
-                            </div>
-                            <div class="vsa-item ${rec.conditions.volumeReturning ? 'vsa-pass' : 'vsa-fail'}">
-                                ${rec.conditions.volumeReturning ? '✅' : '❌'} الحجم يعود
-                            </div>
-                            <div class="vsa-item ${rec.conditions.priceTurning ? 'vsa-pass' : 'vsa-fail'}">
-                                ${rec.conditions.priceTurning ? '✅' : '❌'} السعر يتحول
-                            </div>
+                        <div class="rec-ms-score">
+                            الاتجاه: <strong>${rec.trend === 'uptrend' ? '📈 صاعد' : rec.trend === 'downtrend' ? '📉 هابط' : '➡️ عرضي'}</strong>
+                            ${rec.isSell ? ` | إشارات بيع: ${rec.sellCount}/4` : ` | إشارات شراء: ${rec.buyCount}/4`}
+                        </div>
+                        
+                        <div class="ms-grid">
+                            ${rec.isSell ? `
+                                <div class="ms-item ${rec.conditions.bearishBOS ? 'ms-pass' : 'ms-fail'}">
+                                    ${rec.conditions.bearishBOS ? '✅' : '❌'} BOS هبوطي
+                                </div>
+                                <div class="ms-item ${rec.conditions.bearishCHoCH ? 'ms-pass' : 'ms-fail'}">
+                                    ${rec.conditions.bearishCHoCH ? '✅' : '❌'} CHoCH هبوطي
+                                </div>
+                                <div class="ms-item ${rec.conditions.bearishSweep ? 'ms-pass' : 'ms-fail'}">
+                                    ${rec.conditions.bearishSweep ? '✅' : '❌'} Sweep هبوطي
+                                </div>
+                                <div class="ms-item ${rec.conditions.bearishOB ? 'ms-pass' : 'ms-fail'}">
+                                    ${rec.conditions.bearishOB ? '✅' : '❌'} Order Block
+                                </div>
+                            ` : `
+                                <div class="ms-item ${rec.conditions.bullishBOS ? 'ms-pass' : 'ms-fail'}">
+                                    ${rec.conditions.bullishBOS ? '✅' : '❌'} BOS صعودي
+                                </div>
+                                <div class="ms-item ${rec.conditions.bullishCHoCH ? 'ms-pass' : 'ms-fail'}">
+                                    ${rec.conditions.bullishCHoCH ? '✅' : '❌'} CHoCH صعودي
+                                </div>
+                                <div class="ms-item ${rec.conditions.bullishSweep ? 'ms-pass' : 'ms-fail'}">
+                                    ${rec.conditions.bullishSweep ? '✅' : '❌'} Sweep صعودي
+                                </div>
+                                <div class="ms-item ${rec.conditions.bullishOB ? 'ms-pass' : 'ms-fail'}">
+                                    ${rec.conditions.bullishOB ? '✅' : '❌'} Order Block
+                                </div>
+                            `}
                         </div>
                         
                         <div class="rec-levels">
@@ -1918,6 +2036,7 @@
             statsHistory.push({
                 symbol: activeRecommendation.symbol,
                 result: result,
+                signalType: activeRecommendation.signalType,
                 timestamp: new Date().toISOString()
             });
             
@@ -2049,7 +2168,6 @@
             if (!isMarketOpen()) return;
             if (activeRecommendation) return;
             
-            // تحديث تحليل السوق كل 30 دقيقة
             if (Date.now() - marketContext.lastUpdate > 1800000) {
                 await analyzeMarketContext();
             }
@@ -2084,7 +2202,7 @@
                 localStorage.setItem('recommendations', JSON.stringify(recommendations));
                 displayRecommendations();
                 
-                showToast(`🏆 ${newSignals.length} إشارة ذهبية!`, 'golden');
+                showToast(`🎯 ${newSignals.length} إشارة جديدة!`, 'success');
                 playNotificationSound();
             }
             
@@ -2118,7 +2236,7 @@
                 if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
                 
                 if ('Notification' in window && Notification.permission === 'granted') {
-                    new Notification('StockPro', { body: 'إشارة ذهبية جديدة!', icon: '📈' });
+                    new Notification('StockPro', { body: 'إشارة جديدة!', icon: '📈' });
                 }
             } catch (e) {}
         }

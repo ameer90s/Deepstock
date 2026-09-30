@@ -1,10 +1,11 @@
-const CACHE_NAME = 'stockpro-v1.0';
+const CACHE_NAME = 'stockpro-v2.0';
 const urlsToCache = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
     );
+    self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -13,6 +14,7 @@ self.addEventListener('activate', event => {
             names.map(name => name !== CACHE_NAME ? caches.delete(name) : null)
         ))
     );
+    self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
